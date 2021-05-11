@@ -25,6 +25,54 @@ module DrawSquare #(
 	input [15:0]	pixelData,
 	
 	output 			ready
+	
+	// LT24 Interface
+	output			LT24Wr_n,
+	output			LT24Rd_n,
+	output			LT24CS_n,
+	output			LT24RS,
+	output			LT24Reset_n,
+	output[15:0]	LT24Data,
+	output			LT24LCDOn
+);
+
+//
+// Instatiate LCD Display
+//
+localparam LCD_WIDTH  = 240;
+localparam LCD_HEIGHT = 320;
+
+LT24Display #(
+	.WIDTH		(LCD_WIDTH	),
+	.HEIGHT		(LCD_HEIGHT	),
+	.CLOCK_FREQ	(CLOCK_FREQ	)
+) Display (
+	//Clock and Reset In
+	.clock			(clock		),
+	.globalReset	(globalReset),
+	//Reset for User Logic
+	.resetApp		(resetApp	),
+	//Pixel Interface
+	.xAddr			(xAddr		),
+	.yAddr			(yAddr		),
+	.pixelData		(pixelData	),
+	.pixelWrite		(pixelWrite	),
+	.pixelReady		(pixelReady	),
+	//Use pixel addressing mode
+	.pixelRawMode	(1'b0			),
+	//Unused Command Interface
+	.cmdData			(8'b0			),
+	.cmdWrite		(1'b0			),
+	.cmdDone			(1'b0			),
+	.cmdReady		(				),
+	//Display Connections
+	.LT24Wr_n		(LT24Wr_n	),
+	.LT24Rd_n		(LT24Rd_n	),
+	.LT24CS_n		(LT24CS_n	),
+	.LT24RS			(LT24RS		),
+	.LT24Reset_n	(LT24Reset_n),
+	.LT24Data		(LT24Data	),
+	.LT24LCDOn		(LT24LCDOn	)
 );
 
 //
