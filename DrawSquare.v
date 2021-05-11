@@ -27,6 +27,8 @@ module DrawSquare #(
 	
 	output reg		ready,
 	
+	output reg	[9:0]	LEDs,
+	
 	// LT24 Interface
 	output			LT24Wr_n,
 	output			LT24Rd_n,
@@ -45,6 +47,8 @@ reg	[ 8:0]	yAddr;
 //reg	[15:0]	pixelData;
 wire				pixelReady;
 reg				pixelWrite;
+
+
 
 
 //
@@ -89,23 +93,30 @@ LT24Display #(
 //
 // Declare statemachine registers and parameters
 //
-reg	[1:0]	state;
-localparam	IDLE_STATE			=	2'd0;
-localparam	READY_STATE			=	2'd0;
-localparam	SET_STATE			=	2'd1;
-localparam	WAIT_STATE			=	2'd2;
-localparam	INCREMENT_STATE	=	2'd3;
+reg	[2:0]	state;
+localparam	IDLE_STATE			=	3'd0;
+localparam	READY_STATE			=	3'd1;
+localparam	SET_STATE			=	3'd2;
+localparam	WAIT_STATE			=	3'd3;
+localparam	INCREMENT_STATE	=	3'd4;
+
+
+always @(posedge clock) begin
+	LEDs[9] <= pixelReady;
+end
 
 always @(posedge clock or posedge reset) begin
 	if (reset) begin
 		pixelWrite <= 1'b0;
-		ready <= 1'b1;
+		ready <= 1'b0;
 		state <= IDLE_STATE;
+		LEDs[8:0] <= 9'd32;
 	
 	end else begin
 		case (state)
 			IDLE_STATE : begin // wait for last draw signal to end
-				ready <= 1'b1;
+
+				LEDs[8:0] <= 9'd1;
 				
 				if (!draw) begin
 					state <= READY_STATE;
@@ -114,20 +125,26 @@ always @(posedge clock or posedge reset) begin
 			
 			READY_STATE : begin // wait for new draw command
 				ready <= 1'b1;
+				LEDs[8:0] <= 9'd2;
 				xAddr <= xOrigin;
 				yAddr <= yOrigin;
 			
 				if (draw) begin
+					ready <= 1'b0;
 					state <= SET_STATE;
 				end
 			end
 			
 			SET_STATE : begin // set current pixel
 				pixelWrite <= 1'b1;
-				state <= WAIT_STATE;
+				LEDs[8:0] <= 9'd4;
+				if (!pixelReady) begin
+					state <= WAIT_STATE;
+				end
 			end
 			
 			WAIT_STATE : begin // wait for lcd to finish writing
+				LEDs[8:0] <= 9'd8;
 				if (pixelReady) begin
 					pixelWrite <= 1'b0;
 					state <= INCREMENT_STATE;
@@ -135,10 +152,11 @@ always @(posedge clock or posedge reset) begin
 			end
 			
 			INCREMENT_STATE : begin // increment pixel
-				if	(xAddr < xOrigin + (width - 1)) begin 				// if not at end of row increment x
+				LEDs[8:0] <= 9'd16;
+				if	(xAddr < (xOrigin + (width - 1))) begin 				// if not at end of row increment x
 					xAddr <= xAddr + 7'b1;
 					state <= SET_STATE;
-				end else if (yAddr < yOrigin + (height - 1)) begin	// if at end of row reset x, increment y
+				end else if (yAddr < (yOrigin + (height - 1))) begin	// if at end of row reset x, increment y
 					yAddr <= yAddr + 8'b1;
 					xAddr <= xOrigin;
 					state <= SET_STATE;
