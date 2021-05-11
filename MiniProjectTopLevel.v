@@ -34,16 +34,45 @@ module MiniProjectTopLevel (
 reg				draw = 1'b0;
 reg	[ 7:0]	xOrigin = 8'd20;
 reg	[ 8:0]	yOrigin = 9'd20;
-reg	[ 7:0]	width  = 8'd20;
-reg	[ 8:0]	height = 9'd20;
-reg	[15:0]	pixelData = 16'hF800;
+reg	[ 7:0]	mifId = 8'd1;
+//reg	[ 7:0]	width  = 8'd20;
+//reg	[ 8:0]	height = 9'd20;
+//reg	[15:0]	pixelData = 16'hF800;
 
 wire				ready;
 
 //
 // Instatiate Drawsquare module
 //
-DrawSquare #(
+//DrawSquare #(
+//	// declare parameters
+//	.CLOCK_FREQ (50000000 	)//fix
+//) Square1 (
+//	// declare ports
+//	.clock		(clock		),
+//	.reset		(reset		),
+//	.draw			(draw			),
+//	.xOrigin		(xOrigin		),
+//	.yOrigin		(yOrigin		),
+//	.width		(width		),
+//	.height		(height		),
+//	.pixelData	(pixelData	),
+//	
+//	.ready		(ready		),
+//	
+//	.LEDs			(LEDs),
+//	
+//	// LT24 Interface
+//	.LT24Wr_n	(LT24Wr_n	),
+//	.LT24Rd_n	(LT24Rd_n	),
+//	.LT24CS_n	(LT24CS_n	),
+//	.LT24RS		(LT24RS		),
+//	.LT24Reset_n(LT24Reset_n),
+//	.LT24Data	(LT24Data	),
+//	.LT24LCDOn	(LT24LCDOn	)
+//);
+
+DrawMif #(
 	// declare parameters
 	.CLOCK_FREQ (50000000 	)//fix
 ) Square1 (
@@ -53,9 +82,7 @@ DrawSquare #(
 	.draw			(draw			),
 	.xOrigin		(xOrigin		),
 	.yOrigin		(yOrigin		),
-	.width		(width		),
-	.height		(height		),
-	.pixelData	(pixelData	),
+	.mifId		(mifId),
 	
 	.ready		(ready		),
 	
@@ -70,6 +97,8 @@ DrawSquare #(
 	.LT24Data	(LT24Data	),
 	.LT24LCDOn	(LT24LCDOn	)
 );
+
+
 
 always @ (posedge clock) begin
 	if (ready) begin
