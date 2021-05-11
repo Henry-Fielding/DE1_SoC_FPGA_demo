@@ -18,13 +18,14 @@ module DrawSquare #(
 	// declare ports
 	input 			clock,
 	input				reset,
+	input				draw,
 	input	[ 7:0]	xOrigin,
 	input	[ 8:0]	yOrigin,
 	input [ 7:0]	width,
 	input [ 8:0]	height,
 	input [15:0]	pixelData,
 	
-	output 			ready
+	output reg		ready,
 	
 	// LT24 Interface
 	output			LT24Wr_n,
@@ -35,6 +36,16 @@ module DrawSquare #(
 	output[15:0]	LT24Data,
 	output			LT24LCDOn
 );
+
+//
+// Local Variables
+//
+reg	[ 7:0]	xAddr;
+reg	[ 8:0]	yAddr;
+//reg	[15:0]	pixelData;
+wire				pixelReady;
+reg				pixelWrite;
+
 
 //
 // Instatiate LCD Display
@@ -49,9 +60,9 @@ LT24Display #(
 ) Display (
 	//Clock and Reset In
 	.clock			(clock		),
-	.globalReset	(globalReset),
+	.globalReset	(reset),
 	//Reset for User Logic
-	.resetApp		(resetApp	),
+	.resetApp		(	),
 	//Pixel Interface
 	.xAddr			(xAddr		),
 	.yAddr			(yAddr		),
@@ -80,31 +91,64 @@ LT24Display #(
 //
 reg	[1:0]	state;
 localparam	IDLE_STATE			=	2'd0;
+localparam	READY_STATE			=	2'd0;
 localparam	SET_STATE			=	2'd1;
 localparam	WAIT_STATE			=	2'd2;
 localparam	INCREMENT_STATE	=	2'd3;
 
 always @(posedge clock or posedge reset) begin
 	if (reset) begin
-	
+		pixelWrite <= 1'b0;
+		ready <= 1'b1;
+		state <= IDLE_STATE;
 	
 	end else begin
 		case (state)
-			IDLE_STATE : begin // wait for next command
+			IDLE_STATE : begin // wait for last draw signal to end
+				ready <= 1'b1;
 				
+				if (!draw) begin
+					state <= READY_STATE;
+				end
+			end
+			
+			READY_STATE : begin // wait for new draw command
+				ready <= 1'b1;
+				xAddr <= xOrigin;
+				yAddr <= yOrigin;
+			
+				if (draw) begin
+					state <= SET_STATE;
+				end
 			end
 			
 			SET_STATE : begin // set current pixel
-				
+				pixelWrite <= 1'b1;
+				state <= WAIT_STATE;
 			end
 			
-			WAIT_STATE : begin // wait for lcd to finish write
-			
+			WAIT_STATE : begin // wait for lcd to finish writing
+				if (pixelReady) begin
+					pixelWrite <= 1'b0;
+					state <= INCREMENT_STATE;
+				end
 			end
 			
 			INCREMENT_STATE : begin // increment pixel
-			
+				if	(xAddr < xOrigin + (width - 1)) begin 				// if not at end of row increment x
+					xAddr <= xAddr + 7'b1;
+					state <= SET_STATE;
+				end else if (yAddr < yOrigin + (height - 1)) begin	// if at end of row reset x, increment y
+					yAddr <= yAddr + 8'b1;
+					xAddr <= xOrigin;
+					state <= SET_STATE;
+				end else begin													// if at end of square move to idle
+					state <= IDLE_STATE;
+				end
+				
 			end
+		endcase
+	end
 end
 
 
