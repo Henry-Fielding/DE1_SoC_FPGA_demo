@@ -91,3 +91,28 @@ LT24FunctionalModel #(
 // Test Bench Logic
 //
 
+
+
+
+//
+// Synchronous clock logic
+//
+
+initial begin
+	// initialise clock to zero
+	clock = 1'b0;
+end
+
+real HALF_CLOCK_PERIOD = (1e9/ $itor(CLOCK_FREQ))/2.0; // find the clock half-period
+integer halfCycles = 0;
+
+always begin
+	// toggle clock and increment counter after every half timeperiod
+	#(HALF_CLOCK_PERIOD); 
+	clock = ~clock;
+	halfCycles = halfCycles + 1;
+end
+
+endmodule 
+
+
