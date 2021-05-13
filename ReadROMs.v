@@ -18,13 +18,13 @@ module ReadROMs (
 	input [ 3:0]	ROM,		// general ports
 	input	[15:0]	ROMAddr,
 	
-	output reg	[15:0]	ReadROMOut,
+	output reg	[15:0]	ReadROMOut
 );
 
 //
 // Declare local registers/wires
 //
-reg	[15:0]	ROMOutBus	[3:0];
+wire	[15:0]	ROMOutBus	[3:0];
 
 //
 // Instatiate modules
@@ -55,7 +55,7 @@ MarioWalk3	ROM2 (
 //
 
 always @(posedge clock) begin
-	ReadROMOut <= ROMOutBus[ROM]
+	ReadROMOut <= ROMOutBus[ROM];
 end
 
 endmodule

@@ -18,24 +18,24 @@ module DrawMif #(
 	// declare ports
 	input 			clock,		// timing ports
 	input				reset,
-	input	[ 7:0]	xOrigin,		// logic ports
+	input	[ 7:0]	xOrigin,		// general ports
 	input	[ 8:0]	yOrigin,
 	input	[ 7:0]	mifId,
 	input				draw,
 	
-	output reg		ready,
-	output			LT24Wr_n,	// LT24 Interface
-	output			LT24Rd_n,
-	output			LT24CS_n,
-	output			LT24RS,
-	output			LT24Reset_n,
-	output[15:0]	LT24Data,
-	output			LT24LCDOn,
+	output reg			ready,
+	output				LT24Wr_n,	// LT24 Interface
+	output				LT24Rd_n,
+	output				LT24CS_n,
+	output				LT24RS,
+	output				LT24Reset_n,
+	output	[15:0]	LT24Data,
+	output				LT24LCDOn,
 
 	
-	output reg[9:0]	LEDs,		// TESTING
-	output reg[7:0]	imgWidth,
-	output reg[8:0]	imgHeight
+	output reg	[ 9:0]	LEDs,		// TESTING
+	output reg	[ 7:0]	imgWidth,
+	output reg	[ 8:0]	imgHeight
 	
 );
 
@@ -89,13 +89,25 @@ LT24Display #(
 	.LT24LCDOn		(LT24LCDOn	)
 );
 
-// instantiate ROM
-MarioWalk2	ROM_inst (
-	// defin port connections
-	.address	(ROMAddr	),
-	.clock 	(clock	),
-	.q			(ROMOut	)
+//// instantiate ROM
+//MarioWalk2	ROM_inst (
+//	// define port connections
+//	.address	(ROMAddr	),
+//	.clock 	(clock	),
+//	.q			(ROMOut	)
+//);
+
+// instantiate ROM multiplexer
+ReadROMs ROMs (
+	// declare ports
+	.clock		(clock	),		// timing ports
+	.reset		(reset	),
+	.ROM			(4'd1		),		// general ports
+	.ROMAddr		(ROMAddr	),
+	
+	.ReadROMOut	(ROMOut	)
 );
+
 
 //
 // Declare statemachine registers and parameters
