@@ -17,8 +17,8 @@ module UpdateSprite (
 	input					reset,
 	input		[ 3:0]	keys,		// general ports
 	
-	output reg signed	[ 8:0]	xSprite,
-	output reg signed	[ 9:0]	ySprite,
+	output reg	[ 7:0]	xSprite,
+	output reg	[ 8:0]	ySprite,
 	output reg	[ 3:0] 	spriteId
 );
 
@@ -37,8 +37,8 @@ always @(posedge update or posedge reset) begin
 	end else begin
 		case (state)
 			RUN_STATE : begin
-				xSprite <= 9'd95;
-				ySprite <= 10'd20;
+				xSprite <= 8'd95;
+				ySprite <= 9'd20;
 				//task to update ROMid
 				//if button pressed move to jump
 				update_running_animation();
@@ -52,8 +52,8 @@ always @(posedge update or posedge reset) begin
 			end
 			
 			JUMP_STATE : begin
-				xSprite <= 9'd95;
-				ySprite <= 10'd20;
+				xSprite <= 8'd95;
+				ySprite <= 9'd20;
 				spriteId <= 4'd3;
 				//	adjust height 
 				//	if height = floor move to run
@@ -63,8 +63,8 @@ always @(posedge update or posedge reset) begin
 			end
 			
 			CROUCH_STATE : begin
-				xSprite <= 9'd95;
-				ySprite <= 10'd20;
+				xSprite <= 8'd95;
+				ySprite <= 9'd20;
 				spriteId <= 4'd4;
 				//	adjust height 
 				//	if height = floor move to run
