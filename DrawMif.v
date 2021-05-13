@@ -214,13 +214,13 @@ always @(posedge clock or posedge reset) begin
 			// increment the pixel address
 			INCREMENT_STATE : begin
 				LEDs[8:0] = 9'd128; // TESTING
-				if	(xAddr < (xOrigin + (imgWidth - 1))) begin 				// if not at end of row increment x
-					xAddr <= xAddr + 7'd1;
+				if	(yAddr < (yOrigin + (imgWidth - 1))) begin 				// if not at end of row increment x
+					yAddr <= yAddr + 8'd1;
 					ROMAddr <= ROMAddr + 16'd1;
 					state <= READ_PIXEL_STATE;
-				end else if (yAddr < (yOrigin + (imgHeight - 1))) begin	// if end of row is reached reset x, increment y
-					yAddr <= yAddr + 8'd1;
-					xAddr <= xOrigin;
+				end else if (xAddr > (xOrigin - (imgHeight - 1))) begin	// if end of row is reached reset x, increment y
+					xAddr <= xAddr - 7'd1;
+					yAddr <= yOrigin;
 					ROMAddr <= ROMAddr + 16'd1;
 					state <= READ_PIXEL_STATE;
 				end else begin															// if fully draw, end operation
