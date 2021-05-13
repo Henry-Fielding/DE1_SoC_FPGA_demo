@@ -50,6 +50,13 @@ MarioWalk3	ROM2 (
 	.q			(ROMOutBus[2]	)
 );
 
+Backgroundtemp	ROM3 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[3]	)
+);
+
 //
 // Declare module logic
 //
