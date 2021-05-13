@@ -32,14 +32,19 @@ module MiniProjectTopLevel (
 // Local Variables
 //
 reg				draw = 1'b0;
-reg	[ 7:0]	xOrigin = 8'd20;
+reg	[ 7:0]	xOrigin = 8'd100;
 reg	[ 8:0]	yOrigin = 9'd20;
-reg	[ 7:0]	ROMId = 8'd1;
+reg	[ 3:0]	ROMId = 8'd1;
 //reg	[ 7:0]	width  = 8'd20;
 //reg	[ 8:0]	height = 9'd20;
 //reg	[15:0]	pixelData = 16'hF800;
 
 wire				ready;
+
+reg [3:0] spriteId = 4'b0;
+reg [3:0] layer = 4'b0;
+reg refreshScreen = 1'b0;
+reg clockhold = 1'b0;
 
 //
 // Instatiate Drawsquare module
@@ -101,22 +106,45 @@ DrawMif #(
 
 
 
+
 always @ (posedge clock) begin
-	if (ready) begin
-		draw <= 1'b1;
-	end else begin
-		draw <= 1'b0;
+	if (clock10hz && (clock10hz != clockhold)) begin
+		refreshScreen <= 1'b1;
 	end
+	clockhold <= clock10hz;
+	
+	if (draw) begin
+		draw <= 1'b0;
+	end else if (refreshScreen) begin
+		if ((layer == 0) && ready) begin				// draw
+			// draw background
+			ROMId = 4'd3;
+			draw = 1'b1;
+			
+			layer <= layer + 1'b1;
+		end else if ((layer == 1) && ready) begin
+			// draw player sprite
+			ROMId = spriteId;
+			draw = 1'b1;
+			
+			
+			layer <= layer + 1'b1;
+		end else if (layer > 1) begin
+			refreshScreen <= 1'b0;
+			layer <= 4'b0;
+		end
+		
+	end 
 end
 
 
 // update position
 
 always @ (posedge clock10hz) begin
-	if (ROMId < 2) begin
-		ROMId <= ROMId + 1;
+	if (spriteId < 2) begin
+		spriteId <= spriteId + 1;
 	end else begin
-		ROMId <= 0;
+		spriteId <= 0;
 	end
 end
 
