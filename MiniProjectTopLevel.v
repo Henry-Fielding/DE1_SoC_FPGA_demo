@@ -34,18 +34,19 @@ module MiniProjectTopLevel (
 // Local Variables
 //
 reg				draw = 1'b0;
-reg	[ 7:0]	xOrigin = 8'd100;
-reg	[ 8:0]	yOrigin = 9'd20;
-reg	[ 3:0]	ROMId = 8'd1;
+reg signed	[ 8:0]	xOrigin = 9'd100;
+reg signed	[ 9:0]	yOrigin = 10'd20;
+reg	[ 3:0]	ROMId = 4'd1;
 //reg	[ 7:0]	width  = 8'd20;
 //reg	[ 8:0]	height = 9'd20;
 //reg	[15:0]	pixelData = 16'hF800;
 
 wire				ready;
 wire [3:0] spriteId;
-wire [7:0] xSprite;
-wire [8:0] ySprite;
-reg  [8:0] yFloor = 9'd0;
+wire signed [8:0] xSprite;
+wire signed [9:0] ySprite;
+reg signed [9:0] yFloor = 0;
+reg [3:0] floorCounter = 0;
 reg [3:0] layer = 4'b0;
 reg refreshScreen = 1'b0;
 reg clockhold = 1'b0;
@@ -118,7 +119,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 	end else begin
 		case (state)
 			IDLE_STATE : begin
-				LEDs <= 10'd1;	// testing
+//				LEDs <= 10'd1;	// testing
 				if (clock10hz && (clock10hz != clockhold)) begin
 					state <= UPDATE_SPRITE_STATE;
 					count <= 8'd0;
@@ -127,7 +128,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			UPDATE_SPRITE_STATE : begin
-				LEDs <= 10'd2;	//testing
+//				LEDs <= 10'd2;	//testing
 				spriteUpdate <= 1'd1;
 				count <= count + 8'd1;
 				
@@ -139,7 +140,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_BACKGROUND_STATE : begin
-				LEDs <= 10'd4;	//testing
+//				LEDs <= 10'd4;	//testing
 				xOrigin <= xSprite;
 				yOrigin <= ySprite;
 				ROMId <= 4'd15;
@@ -154,28 +155,42 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_FLOOR_STATE : begin
-				LEDs <= 10'd8;	//testing
+//				LEDs <= 10'd8;	//testin
+				LEDs <= yFloor;
 				xOrigin <= 8'd63;
-				yOrigin <= yFloor;
+				yOrigin <= yFloor; //+ 32 * floorcounter;
 				ROMId <= 4'd5;
 				draw <= 1'd1;
 				count <= count + 8'd1;
 				if(count > 8'd20 && ready) begin
 					draw <= 1'd0;
 					count <= 8'd0;
-					if (yFloor > 9'd320) begin
-						yFloor <= 9'd0;
-						state <= DRAW_SPRITE_STATE;
+					if (yFloor <= -32) begin
+//						LEDs <= 10'd1;	//testing
+						yFloor <= 0;
 					end else begin
-						yFloor <= yFloor + 9'd32;
-						state <= DRAW_FLOOR_STATE;
+//						LEDs <= 10'd0;	//testing
+						yFloor <= yFloor - 5;
 					end
+					state <= DRAW_SPRITE_STATE;
+//					floorCounter <= floorCounter + 1;
+//					if (floorCounter > 10) begin
+//						yFloor <= yFloor - 357;
+//						if (yFloor <= -32) begin
+//							yFloor <= 0;
+//						end
+//						//yFloor <= yFloor - 9'd325;
+//						state <= DRAW_SPRITE_STATE;
+//					end else begin
+//						yFloor <= yFloor + 9'd32;
+//						state <= DRAW_FLOOR_STATE;
+//					end
 				end
 			
 			end
 			
 			DRAW_SPRITE_STATE : begin
-				LEDs <= 10'd16;	//testing
+//				LEDs <= 10'd16;	//testing
 				xOrigin <= xSprite;
 				yOrigin <= ySprite;
 				ROMId <= spriteId;
@@ -239,7 +254,7 @@ reg [31:0] clockcounter = 0;
 // clock divider 
 always @ (posedge clock) begin
 		clockcounter <= clockcounter + 32'd1;
-		if (clockcounter >= 32'd2500000) begin
+		if (clockcounter >= 32'd25000000) begin
 			clock10hz <= !clock10hz;
 			clockcounter <= 32'd0;
 		end
