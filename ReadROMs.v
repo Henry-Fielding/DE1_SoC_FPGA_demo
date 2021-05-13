@@ -24,7 +24,7 @@ module ReadROMs (
 //
 // Declare local registers/wires
 //
-wire	[15:0]	ROMOutBus	[3:0];
+wire	[15:0]	ROMOutBus	[15:0];
 
 //
 // Instatiate modules
@@ -50,11 +50,32 @@ MarioWalk3	ROM2 (
 	.q			(ROMOutBus[2]	)
 );
 
-Backgroundtemp	ROM3 (
+MarioJump	ROM3 (
 	// define port connections
 	.clock 	(clock			),
 	.address	(ROMAddr			),
 	.q			(ROMOutBus[3]	)
+);
+
+MarioCrouch	ROM4 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[4]	)
+);
+
+FloorTile1	ROM5 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[5]	)
+);
+
+Backgroundtemp	ROM15 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[15]	)
 );
 
 //

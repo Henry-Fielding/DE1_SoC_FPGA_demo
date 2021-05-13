@@ -129,7 +129,8 @@ always @(posedge clock or posedge reset) begin
 		case (state)
 			// wait for previous draw signal to end then move to ready state
 			IDLE_STATE : begin				
-				LEDs[8:0] = 9'd1; 			// TESTING  
+				LEDs[8:0] = 9'd1; 			// TESTING 
+				ready <= 1'd1;
 				if (!draw) begin
 					state <= READY_STATE;
 				end
