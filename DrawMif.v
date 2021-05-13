@@ -20,7 +20,7 @@ module DrawMif #(
 	input				reset,
 	input	[ 7:0]	xOrigin,		// general ports
 	input	[ 8:0]	yOrigin,
-	input	[ 7:0]	mifId,
+	input	[ 3:0]	ROMId,
 	input				draw,
 	
 	output reg			ready,
@@ -89,20 +89,12 @@ LT24Display #(
 	.LT24LCDOn		(LT24LCDOn	)
 );
 
-//// instantiate ROM
-//MarioWalk2	ROM_inst (
-//	// define port connections
-//	.address	(ROMAddr	),
-//	.clock 	(clock	),
-//	.q			(ROMOut	)
-//);
-
 // instantiate ROM multiplexer
 ReadROMs ROMs (
 	// declare ports
 	.clock		(clock	),		// timing ports
 	.reset		(reset	),
-	.ROM			(4'd1		),		// general ports
+	.ROMId		(ROMId	),		// general ports
 	.ROMAddr		(ROMAddr	),
 	
 	.ReadROMOut	(ROMOut	)

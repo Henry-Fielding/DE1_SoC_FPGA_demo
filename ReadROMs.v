@@ -15,7 +15,7 @@ module ReadROMs (
 	// declare ports
 	input 			clock,	// timing ports
 	input 			reset,
-	input [ 3:0]	ROM,		// general ports
+	input [ 3:0]	ROMId,	// general ports
 	input	[15:0]	ROMAddr,
 	
 	output reg	[15:0]	ReadROMOut
@@ -55,7 +55,7 @@ MarioWalk3	ROM2 (
 //
 
 always @(posedge clock) begin
-	ReadROMOut <= ROMOutBus[ROM];
+	ReadROMOut <= ROMOutBus[ROMId];
 end
 
 endmodule

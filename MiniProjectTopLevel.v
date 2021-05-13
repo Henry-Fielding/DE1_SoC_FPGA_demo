@@ -34,7 +34,7 @@ module MiniProjectTopLevel (
 reg				draw = 1'b0;
 reg	[ 7:0]	xOrigin = 8'd20;
 reg	[ 8:0]	yOrigin = 9'd20;
-reg	[ 7:0]	mifId = 8'd1;
+reg	[ 7:0]	ROMId = 8'd1;
 //reg	[ 7:0]	width  = 8'd20;
 //reg	[ 8:0]	height = 9'd20;
 //reg	[15:0]	pixelData = 16'hF800;
@@ -82,7 +82,7 @@ DrawMif #(
 	.draw			(draw			),
 	.xOrigin		(xOrigin		),
 	.yOrigin		(yOrigin		),
-	.mifId		(mifId),
+	.ROMId		(ROMId),
 	
 	.ready		(ready		),
 	
@@ -100,6 +100,7 @@ DrawMif #(
 
 
 
+
 always @ (posedge clock) begin
 	if (ready) begin
 		draw <= 1'b1;
@@ -108,6 +109,28 @@ always @ (posedge clock) begin
 	end
 end
 
+
+// update position
+
+always @ (posedge clock10hz) begin
+	if (ROMId < 2) begin
+		ROMId <= ROMId + 1;
+	end else begin
+		ROMId <= 0;
+	end
+end
+
+reg clock10hz = 0;
+reg [31:0] clockcounter = 0;
+
+// clock divider 
+always @ (posedge clock) begin
+		clockcounter <= clockcounter + 32'd1;
+		if (clockcounter >= 32'd2500000) begin
+			clock10hz <= !clock10hz;
+			clockcounter <= 32'd0;
+		end
+end
 
 
 
