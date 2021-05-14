@@ -14,11 +14,11 @@ module UpdateObstacle (
 	// declare ports
 	input					update,	// timing ports
 	input					reset,
-	input		[ 3:0]	keys,		// general ports
+	input	[3:0]			speed,
 	
 	output reg	[ 7:0]	xSprite,
 	output reg	[ 8:0]	ySprite,
-	output reg	[ 3:0] 	spriteId
+	output reg	[ 3:0] 	spriteId //
 );
 
 //
@@ -40,16 +40,16 @@ always @(posedge update or posedge reset) begin
 			end
 			
 			RESET_POSITION_STATE : begin // reset to left of screen 
-				xSprite <= 63; 
+				xSprite <= 95; 
 				ySprite <= 419;
 				
 				state <= UPDATE_POSITION_STATE;
 			end
 			
 			UPDATE_POSITION_STATE : begin // gradually move left
-				ySprite <= ySprite - 4;
+				ySprite <= ySprite - speed;
 				
-				if (ySprite <= 68) begin
+				if (ySprite <= 36 + (2*speed)) begin
 					state <= RESET_POSITION_STATE;
 				end
 			end

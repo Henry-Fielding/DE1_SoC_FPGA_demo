@@ -17,6 +17,7 @@ module MiniProjectTopLevel (
 	input reset,
 	
 	input [3:0] keys,
+	input [3:0]	speed,
 	
 	output				LT24Wr_n,
 	output				LT24Rd_n,
@@ -42,9 +43,16 @@ reg	[ 3:0]	ROMId = 8'd1;
 //reg	[15:0]	pixelData = 16'hF800;
 
 wire				ready;
+
+reg spriteUpdate;
 wire [3:0] spriteId;
 wire [7:0] xSprite;
 wire [8:0] ySprite;
+
+reg obstacleUpdate;
+wire [ 7:0] xObstacle;
+wire [ 8:0]	yObstacle; 
+
 reg  [8:0] yFloor = 9'd100;
 reg [3:0] layer = 4'b0;
 reg refreshScreen = 1'b0;
@@ -52,7 +60,9 @@ reg clockhold = 1'b0;
 
 reg [7:0] count = 8'd0;
 
-reg spriteUpdate;
+//reg [3:0] speed = 4'd8;
+
+
 
 //
 // Instatiate  module
@@ -86,13 +96,26 @@ DrawMif #(
 UpdateSprite Sprite (
 	//define port connections
 	.update		(spriteUpdate),	// timing ports
-	.reset		(reset		),	//TEST (maybe remove)
-	.keys			(keys			),	// general ports
+	.reset		(reset		),		// TEST (maybe remove)
+	.keys			(keys			),		// general ports
 	
 	.xSprite		(xSprite 	),
 	.ySprite		(ySprite		),
 	.spriteId	(spriteId	)
 );
+
+UpdateObstacle Obstacle (
+	//define port connections
+	.update		(obstacleUpdate),	// timing ports
+	.reset		(reset		),		// TEST (maybe remove)
+	.speed		(speed		),
+	
+	.xSprite		(xObstacle 	),
+	.ySprite		(yObstacle	),
+	.spriteId	(	)					// unused
+);
+
+
 
 //
 // state machine registers
@@ -101,9 +124,11 @@ UpdateSprite Sprite (
 reg	[3:0]	state;
 localparam	IDLE_STATE	=	4'd0;
 localparam	UPDATE_SPRITE_STATE	=	4'd1;
-localparam	DRAW_BACKGROUND_STATE	=	4'd2;
-localparam	DRAW_FLOOR_STATE = 4'd3;
-localparam	DRAW_SPRITE_STATE	=	4'd4;
+localparam	UPDATE_OBSTACLE_STATE	=	4'd2;
+localparam	DRAW_BACKGROUND_STATE	=	4'd3;
+localparam	DRAW_FLOOR_STATE = 4'd4;
+localparam	DRAW_SPRITE_STATE	=	4'd5;
+localparam	DRAW_OBSTACLE_STATE	=	4'd6;
 
 
 
@@ -134,12 +159,25 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 				if (count > 8'd20) begin // TEST, add ready state instead?
 					spriteUpdate <= 1'd0;
 					count <= 8'd0;
-					state <= DRAW_BACKGROUND_STATE;
+					state <= UPDATE_OBSTACLE_STATE;
 				end
 			end
 			
-			DRAW_BACKGROUND_STATE : begin
+			UPDATE_OBSTACLE_STATE : begin
 				LEDs <= 10'd4;	//testing
+				obstacleUpdate <= 1'd1;
+				count <= count + 8'd1;
+				
+				if (count > 8'd20) begin // TEST, add ready state instead?
+					obstacleUpdate <= 1'd0;
+					count <= 8'd0;
+					state <= DRAW_BACKGROUND_STATE;
+				end
+			
+			end
+			
+			DRAW_BACKGROUND_STATE : begin
+				LEDs <= 10'd8;	//testing
 				xOrigin <= 239;
 				yOrigin <= 100;
 				ROMId <= 4'd15;
@@ -154,7 +192,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_FLOOR_STATE : begin
-				LEDs <= 10'd8;	//testing
+				LEDs <= 10'd16;	//testing
 				xOrigin <= 8'd31;
 				yOrigin <= yFloor;
 				ROMId <= 4'd5;
@@ -162,8 +200,8 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 				count <= count + 8'd1;
 				if(count > 8'd20 && ready) begin
 					draw <= 1'd0;
-					yFloor <= yFloor - 4;
-					if(yFloor <= 68) begin
+					yFloor <= yFloor - speed;
+					if(yFloor <= 68 + speed) begin
 						yFloor <= 100;
 					end
 					state <= DRAW_SPRITE_STATE;
@@ -173,10 +211,24 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_SPRITE_STATE : begin
-				LEDs <= 10'd16;	//testing
+				LEDs <= 10'd32;	//testing
 				xOrigin <= xSprite;
 				yOrigin <= ySprite;
 				ROMId <= spriteId;
+				draw <= 1'd1;
+				count <= count + 8'd1;
+				if(count > 8'd20 && ready) begin
+					draw <= 1'd0;
+					count <= 8'd0;
+					state <= DRAW_OBSTACLE_STATE;
+				end
+			end
+			
+			DRAW_OBSTACLE_STATE : begin
+				LEDs <= 10'd64;	//testing
+				xOrigin <= xObstacle;
+				yOrigin <= yObstacle;
+				ROMId <= 4'd6;
 				draw <= 1'd1;
 				count <= count + 8'd1;
 				if(count > 8'd20 && ready) begin
