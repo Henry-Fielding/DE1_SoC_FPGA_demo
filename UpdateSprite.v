@@ -46,7 +46,7 @@ always @(posedge update or posedge reset) begin
 				
 				if (!keys[0]) begin
 					state <= JUMP_STATE;
-					velocity <= 8'd12;
+					velocity <= 8'd14;
 				end
 				if (!keys[1]) begin
 					state <= CROUCH_STATE;
@@ -58,9 +58,9 @@ always @(posedge update or posedge reset) begin
 				ySprite <= 9'd119;
 				velocity <= velocity - 8'd2;
 				spriteId <= 4'd3;
-				//	adjust height 
-				//	if height = floor move to run
-				if (velocity[7] == 1 && xSprite <= 111) begin // if velocity is negative and sprite about to hit ground
+				
+				// if velocity is negative and sprite about to hit ground
+				if (velocity[7] == 1 && xSprite <= 111) begin
 					state <= RUN_STATE;
 				end
 			end
@@ -69,7 +69,7 @@ always @(posedge update or posedge reset) begin
 				xSprite <= 8'd95;
 				ySprite <= 9'd119;
 				spriteId <= 4'd4;
-				//	adjust height 
+ 
 				//	if height = floor move to run
 				if (keys[1]) begin
 					state <= RUN_STATE;
