@@ -35,7 +35,7 @@ module MiniProjectTopLevel (
 //
 reg				draw = 1'b0;
 reg	[ 7:0]	xOrigin = 8'd100;
-reg	[ 8:0]	yOrigin = 9'd20;
+reg	[ 8:0]	yOrigin = 9'd119;
 reg	[ 3:0]	ROMId = 8'd1;
 //reg	[ 7:0]	width  = 8'd20;
 //reg	[ 8:0]	height = 9'd20;
@@ -45,7 +45,7 @@ wire				ready;
 wire [3:0] spriteId;
 wire [7:0] xSprite;
 wire [8:0] ySprite;
-reg  [8:0] yFloor = 9'd0;
+reg  [8:0] yFloor = 9'd100;
 reg [3:0] layer = 4'b0;
 reg refreshScreen = 1'b0;
 reg clockhold = 1'b0;
@@ -140,8 +140,8 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			
 			DRAW_BACKGROUND_STATE : begin
 				LEDs <= 10'd4;	//testing
-				xOrigin <= xSprite;
-				yOrigin <= ySprite;
+				xOrigin <= 239;
+				yOrigin <= 100;
 				ROMId <= 4'd15;
 				draw <= 1'd1;
 				count <= count + 8'd1;
@@ -155,21 +155,19 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			
 			DRAW_FLOOR_STATE : begin
 				LEDs <= 10'd8;	//testing
-				xOrigin <= 8'd63;
+				xOrigin <= 8'd31;
 				yOrigin <= yFloor;
 				ROMId <= 4'd5;
 				draw <= 1'd1;
 				count <= count + 8'd1;
 				if(count > 8'd20 && ready) begin
 					draw <= 1'd0;
-					count <= 8'd0;
-					if (yFloor > 9'd320) begin
-						yFloor <= 9'd0;
-						state <= DRAW_SPRITE_STATE;
-					end else begin
-						yFloor <= yFloor + 9'd32;
-						state <= DRAW_FLOOR_STATE;
+					yFloor <= yFloor - 4;
+					if(yFloor <= 68) begin
+						yFloor <= 100;
 					end
+					state <= DRAW_SPRITE_STATE;
+					count <= 8'd0;
 				end
 			
 			end

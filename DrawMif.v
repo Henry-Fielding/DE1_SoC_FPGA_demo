@@ -34,16 +34,19 @@ module DrawMif #(
 
 	
 	output reg	[ 9:0]	LEDs,		// TESTING
-	output reg	[ 7:0]	imgWidth,
-	output reg	[ 8:0]	imgHeight
+	output reg	[ 7:0]	imgHeight,
+	output reg	[ 8:0]	imgWidth
+	
 	
 );
 
 //
 // Declare local registers/wires
 //
-reg	[ 7:0]	xAddr;		// LCD connections
-reg	[ 8:0]	yAddr;
+reg	[ 7:0]	xAddrLCD;		// LCD connections
+reg	[ 8:0]	yAddrLCD;
+reg	[ 7:0]	xAddrFrame;		// LCD connections
+reg	[ 8:0]	yAddrFrame;
 reg	[15:0]	pixelData;
 wire				pixelReady;
 reg				pixelWrite;
@@ -70,8 +73,8 @@ LT24Display #(
 	.clock			(clock		),	// clock and reset in
 	.globalReset	(reset		),
 	.resetApp		(				),	// reset for user logic
-	.xAddr			(xAddr		),	// pixel interface
-	.yAddr			(yAddr		),
+	.xAddr			(xAddrLCD	),	// pixel interface
+	.yAddr			(yAddrLCD	),
 	.pixelData		(pixelData	),
 	.pixelWrite		(pixelWrite	),
 	.pixelReady		(pixelReady	),
@@ -140,8 +143,8 @@ always @(posedge clock or posedge reset) begin
 			READY_STATE : begin 					
 				LEDs[8:0] = 9'd2; 				// TESTING
 				ready <= 1'd1;
-				xAddr <= xOrigin;					// set the initial pixel to the input coordinates
-				yAddr <= yOrigin;
+				xAddrFrame <= xOrigin;					// set the initial pixel to the input coordinates
+				yAddrFrame <= yOrigin;
 			
 				if (draw) begin					// move to read state when draw input recieved
 					ready <= 1'd0;
@@ -157,7 +160,7 @@ always @(posedge clock or posedge reset) begin
 				counter <= counter + 1;
 				
 				if (counter > 2) begin			// wait 2 clock cycles for ROM output to update then read ROM
-					imgWidth <= ROMOut[7:0];
+					imgWidth <= ROMOut[8:0];
 					counter <= 8'd0;
 					state <= READ_HEIGHT_STATE;
 				end
@@ -170,12 +173,14 @@ always @(posedge clock or posedge reset) begin
 				counter <= counter + 1;			
 				
 				if (counter > 2) begin			// wait 2 clock cycles for ROM output to update then read ROM
-					imgHeight <= ROMOut[8:0];
+					imgHeight <= ROMOut[7:0];
 					ROMAddr <= 8'd2;
 					counter <= 8'd0;
 					state <= READ_PIXEL_STATE;
 				end
 			end
+			
+			
 			
 			// read colour of the current pixel from the ROM
 			READ_PIXEL_STATE : begin
@@ -192,7 +197,9 @@ always @(posedge clock or posedge reset) begin
 			// write the pixel colour to the LCD
 			SET_PIXELDATA_STATE : begin
 				LEDs[8:0] = 9'd32; 					// TESTING
-				if (ROMOut != 16'd1) begin			// write pixel data to LCD if not 'empty' (empty cells represented as 1'b1)
+				if (ROMOut != 16'd1 && (xAddrFrame >= 0 && xAddrFrame <= 319) && (yAddrFrame >= 100 && yAddrFrame <= 419)) begin			// write pixel data to LCD if not 'empty' (empty cells represented as 1'b1)
+					xAddrLCD <= xAddrFrame;
+					yAddrLCD <= yAddrFrame - 100;
 					pixelWrite <= 1'd1;				 
 					
 					if (!pixelReady) begin			
@@ -215,13 +222,13 @@ always @(posedge clock or posedge reset) begin
 			// increment the pixel address
 			INCREMENT_STATE : begin
 				LEDs[8:0] = 9'd128; // TESTING
-				if	(yAddr < (yOrigin + (imgWidth - 1))) begin 				// if not at end of row increment x
-					yAddr <= yAddr + 8'd1;
+				if	(yAddrFrame < (yOrigin + (imgWidth - 1))) begin 				// if not at end of row increment x
+					yAddrFrame <= yAddrFrame + 8'd1;
 					ROMAddr <= ROMAddr + 16'd1;
 					state <= READ_PIXEL_STATE;
-				end else if (xAddr > (xOrigin - (imgHeight - 1))) begin	// if end of row is reached reset x, increment y
-					xAddr <= xAddr - 7'd1;
-					yAddr <= yOrigin;
+				end else if (xAddrFrame > (xOrigin - (imgHeight - 1))) begin	// if end of row is reached reset x, increment y
+					xAddrFrame <= xAddrFrame - 7'd1;
+					yAddrFrame <= yOrigin;
 					ROMAddr <= ROMAddr + 16'd1;
 					state <= READ_PIXEL_STATE;
 				end else begin															// if fully draw, end operation
