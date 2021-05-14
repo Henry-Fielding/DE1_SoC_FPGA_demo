@@ -13,12 +13,12 @@
 module CheckCollisions #(
 	// declare parameters
 	parameter X1_BITWIDTH = 8,
-	parameter Y1_BITWIDTH = 8,
+	parameter Y1_BITWIDTH = 9,
 	parameter X2_BITWIDTH = 8,
-	parameter Y2_BITWIDTH = 8,
-	parameter WIDTH_1		= 50,
+	parameter Y2_BITWIDTH = 9,
+	parameter WIDTH_1		= 32,
 	parameter HEIGHT_1	= 50,
-	parameter WIDTH_2		= 50,
+	parameter WIDTH_2		= 32,
 	parameter HEIGHT_2	= 50
 )(
 	// declare ports
@@ -37,7 +37,7 @@ module CheckCollisions #(
 //
 
 always @(posedge update) begin
-	if ((x1 < x2 + WIDTH_2) && (x1 + WIDTH_1 > x2) && (y1 < y2 + HEIGHT_2) && (y1 + HEIGHT_1 > y2)) begin
+	if ((y1 < y2 + WIDTH_2) && (y1 + WIDTH_1 > y2) && (x1 < x2 + HEIGHT_2) && (x1 + HEIGHT_1 > x2)) begin
 		collision <= 1'b1;
 	end else begin
 		collision <= 1'b0;

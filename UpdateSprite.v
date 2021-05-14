@@ -39,7 +39,7 @@ always @(posedge update or posedge reset) begin
 		case (state)
 			RUN_STATE : begin
 				xSprite <= 8'd95;
-				ySprite <= 9'd119;
+				ySprite <= 9'd129;
 				//task to update ROMid
 				//if button pressed move to jump
 				update_running_animation();
@@ -55,7 +55,7 @@ always @(posedge update or posedge reset) begin
 			
 			JUMP_STATE : begin 
 				xSprite <= xSprite + velocity;
-				ySprite <= 9'd119;
+				ySprite <= 9'd129;
 				velocity <= velocity - 8'd2;
 				spriteId <= 4'd3;
 				
@@ -66,8 +66,8 @@ always @(posedge update or posedge reset) begin
 			end
 			
 			CROUCH_STATE : begin
-				xSprite <= 8'd95;
-				ySprite <= 9'd119;
+				xSprite <= 8'd53;
+				ySprite <= 9'd123;
 				spriteId <= 4'd4;
  
 				//	if height = floor move to run

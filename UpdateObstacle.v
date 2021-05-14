@@ -40,7 +40,7 @@ always @(posedge update or posedge reset) begin
 			end
 			
 			RESET_POSITION_STATE : begin // reset to left of screen 
-				xSprite <= 95; 
+				xSprite <= 63; 
 				ySprite <= 419;
 				
 				state <= UPDATE_POSITION_STATE;
