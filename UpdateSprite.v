@@ -22,6 +22,7 @@ module UpdateSprite (
 	output reg	[ 3:0] 	spriteId
 );
 
+reg signed [7:0] velocity;
 //
 // Declare statemachine registers and parameters
 //
@@ -45,19 +46,21 @@ always @(posedge update or posedge reset) begin
 				
 				if (!keys[0]) begin
 					state <= JUMP_STATE;
+					velocity <= 8'd12;
 				end
 				if (!keys[1]) begin
 					state <= CROUCH_STATE;
 				end
 			end
 			
-			JUMP_STATE : begin
-				xSprite <= 8'd95;
+			JUMP_STATE : begin 
+				xSprite <= xSprite + velocity;
 				ySprite <= 9'd119;
+				velocity <= velocity - 8'd2;
 				spriteId <= 4'd3;
 				//	adjust height 
 				//	if height = floor move to run
-				if (keys[0]) begin
+				if (velocity[7] == 1 && xSprite <= 111) begin // if velocity is negative and sprite about to hit ground
 					state <= RUN_STATE;
 				end
 			end
@@ -83,6 +86,11 @@ task update_running_animation () ;
 	end else begin
 		spriteId <= 4'd0;
 	end
+
+endtask
+
+task update_jump_height () ;
+	
 
 endtask
 
