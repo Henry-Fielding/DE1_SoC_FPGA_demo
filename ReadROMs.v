@@ -64,14 +64,14 @@ MarioCrouch	ROM4 (
 	.q			(ROMOutBus[4]	)
 );
 
-FloorTile1	ROM5 (
+Floor	ROM5 (
 	// define port connections
 	.clock 	(clock			),
 	.address	(ROMAddr			),
 	.q			(ROMOutBus[5]	)
 );
 
-Backgroundtemp	ROM15 (
+Background	ROM15 (
 	// define port connections
 	.clock 	(clock			),
 	.address	(ROMAddr			),
