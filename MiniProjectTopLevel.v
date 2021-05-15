@@ -37,7 +37,7 @@ module MiniProjectTopLevel (
 reg				draw = 1'b0;
 reg	[ 7:0]	xOrigin = 8'd100;
 reg	[ 8:0]	yOrigin = 9'd119;
-reg	[ 3:0]	ROMId = 8'd1;
+reg	[ 3:0]	ROMId = 4'd1;
 //reg	[ 7:0]	width  = 8'd20;
 //reg	[ 8:0]	height = 9'd20;
 //reg	[15:0]	pixelData = 16'hF800;
@@ -61,6 +61,11 @@ reg refreshScreen = 1'b0;
 reg clockhold = 1'b0;
 
 reg [7:0] count = 8'd0;
+
+reg updateScore;
+wire readyScore;
+wire [23:0] totalScore;
+wire score;
 
 //reg [3:0] speed = 4'd8;
 
@@ -115,7 +120,8 @@ UpdateObstacle Obstacle (
 	
 	.xSprite		(xObstacle 	),
 	.ySprite		(yObstacle	),
-	.spriteId	(	)					// unused
+	.spriteId	(	),					// unused
+	.score		(score		)
 );
 
 CheckCollisions #(
@@ -128,7 +134,7 @@ CheckCollisions #(
 	.HEIGHT_1		(64	),
 	.WIDTH_2			(32	),
 	.HEIGHT_2		(64	)
-)(
+) Collisions (
 	// declare ports
 	.update		(collisionUpdate	),	// timing ports
 	.reset		(reset				),
@@ -140,6 +146,20 @@ CheckCollisions #(
 	.collision	(temp)
 );
 
+UpdateScore #(
+	.SCORE_BITWIDTH (24)
+) Score (
+	// declare ports
+	.clock	(clock),// timing ports
+	.reset	(reset),
+	.update (updateScore),
+	.score (score),
+	
+	.ready (readyScore ),
+	.totalScoreOutput (totalScore) // not connecting porperly for some reason
+);
+
+
 //
 // state machine registers
 //
@@ -149,13 +169,16 @@ localparam	IDLE_STATE	=	4'd0;
 localparam	UPDATE_SPRITE_STATE	=	4'd1;
 localparam	UPDATE_OBSTACLE_STATE	=	4'd2;
 localparam	UPDATE_COLLISION_STATE	=	4'd3;
-localparam	DRAW_BACKGROUND_STATE	=	4'd4;
-localparam	DRAW_FLOOR_STATE = 4'd5;
-localparam	DRAW_SPRITE_STATE	=	4'd6;
-localparam	DRAW_OBSTACLE_STATE	=	4'd7;
+localparam	UPDATE_SCORE_STATE	=	4'd4;
+localparam	DRAW_BACKGROUND_STATE	=	4'd5;
+localparam	DRAW_FLOOR_STATE = 4'd6;
+localparam	DRAW_SPRITE_STATE	=	4'd7;
+localparam	DRAW_OBSTACLE_STATE	=	4'd8;
 
 always @ (posedge clock) begin
 	LEDs[9] <= temp;
+	LEDs[8] <= score;
+	LEDs[7:0] <= totalScore[7:0];
 end
 
 always @ (posedge clock or posedge reset) begin // add reset condition
@@ -169,7 +192,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 	end else begin
 		case (state)
 			IDLE_STATE : begin
-				LEDs[8:0] <= 9'd1;	// testing
+//				LEDs[8:0] <= 9'd1;	// testing
 				if (clock10hz && (clock10hz != clockhold)) begin
 					state <= UPDATE_SPRITE_STATE;
 					count <= 8'd0;
@@ -178,7 +201,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			UPDATE_SPRITE_STATE : begin
-				LEDs[8:0] <= 9'd2;		//testing
+//				LEDs[8:0] <= 9'd2;		//testing
 				spriteUpdate <= 1'd1;
 				count <= count + 8'd1;
 				
@@ -190,7 +213,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			UPDATE_OBSTACLE_STATE : begin
-				LEDs[8:0] <= 9'd3;		//testing
+//				LEDs[8:0] <= 9'd3;		//testing
 				obstacleUpdate <= 1'd1;
 				count <= count + 8'd1;
 				
@@ -203,12 +226,25 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			UPDATE_COLLISION_STATE : begin
-				LEDs[8:0] <= 9'd4;		//testing
+//				LEDs[8:0] <= 9'd4;		//testing
 				collisionUpdate <= 1'd1;
 				count <= count + 8'd1;
 				
 				if (count > 8'd20) begin // TEST, add ready state instead?
 					collisionUpdate <= 1'd0;
+					count <= 8'd0;
+					state <= UPDATE_SCORE_STATE;
+				end
+			
+			end 
+			
+			UPDATE_SCORE_STATE : begin
+//				LEDs[8:0] <= 9'd8;		//testing
+				updateScore <= 1'd1;
+				count <= count + 8'd1;
+				
+				if (count > 8'd20 && readyScore) begin // TEST, add ready state instead?
+					updateScore <= 1'd0;
 					count <= 8'd0;
 					state <= DRAW_BACKGROUND_STATE;
 				end
@@ -216,7 +252,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_BACKGROUND_STATE : begin
-				LEDs[8:0] <= 9'd5;		//testing
+//				LEDs[8:0] <= 9'd16;		//testing
 				xOrigin <= 239;
 				yOrigin <= 100;
 				ROMId <= 4'd15;
@@ -231,7 +267,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_FLOOR_STATE : begin
-				LEDs[8:0] <= 9'd6;		//testing
+//				LEDs[8:0] <= 9'd32;		//testing
 				xOrigin <= 8'd31;
 				yOrigin <= yFloor;
 				ROMId <= 4'd5;
@@ -250,7 +286,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_SPRITE_STATE : begin
-				LEDs[8:0] <= 9'd7;		//testing
+//				LEDs[8:0] <= 9'd64;		//testing
 				xOrigin <= xSprite;
 				yOrigin <= ySprite;
 				ROMId <= spriteId;
@@ -264,7 +300,7 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_OBSTACLE_STATE : begin
-				LEDs[8:0] <= 9'd8;		//testing
+//				LEDs[8:0] <= 9'd128;		//testing
 				xOrigin <= xObstacle;
 				yOrigin <= yObstacle;
 				ROMId <= 4'd6;
