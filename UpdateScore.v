@@ -34,15 +34,15 @@ wire countValue [(SCOREBITWIDTH-1):0];
 //
 BCDCounter #(
 	// define parameters
-	.COUNTER_DIGITS	(SCORE_DIGITS)
+	.COUNTER_DIGITS	(SCORE_DIGITS	)
 )(
 	// define ports
-	.clock	(clock	),
-	.reset	(reset	),
-	.enable	(enable	),
+	.clock		(clock		),
+	.reset		(reset		),
+	.enable		(enable		),
 	
-	.ready		(ready	),
-	.countValue	(countValue)
+	.ready		(ready		),
+	.countValue	(countValue	)
 );
 
 HexTo7SegmentNBit #(
@@ -54,10 +54,6 @@ HexTo7SegmentNBit #(
 	.display	(display		)
 );
 
-
-//
-// define module behaviour
-//
-
+endmodule 
 
 
