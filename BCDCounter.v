@@ -1,3 +1,4 @@
+// 
 // BCD counter
 // ------------------------
 // By: Henry Fielding
@@ -12,7 +13,7 @@ module BCDCounter #(
 	// declare parameters
 	parameter COUNTER_DIGITS				= 6,
 	parameter COUNTER_BITWIDTH				= COUNTER_DIGITS * 4,
-	parameter NIBBLE_COUNTER_BITWIDTH	= $clog2(COUNTER_DIGITS + 1)
+	parameter NIBBLE_COUNTER_BITWIDTH	= $clog2(COUNTER_DIGITS + 2)
 )(
 	// declare ports
 	input		clock,
@@ -24,8 +25,9 @@ module BCDCounter #(
 );
 
 // declare local registers
-reg	[COUNTER_DIGITS-1:0] 				countValueTemp;
+reg	[COUNTER_BITWIDTH-1:0] 				countValueTemp;
 reg	[NIBBLE_COUNTER_BITWIDTH-1:0]		nibbleCounter;
+//reg	[32:0]		nibbleCounter;
 reg	[3:0] 									nibble;
 
 // declare local parameters
