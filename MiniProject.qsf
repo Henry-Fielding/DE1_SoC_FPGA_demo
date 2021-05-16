@@ -38,7 +38,7 @@
 
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY UpdateScore
+set_global_assignment -name TOP_LEVEL_ENTITY MiniProjectTopLevel
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "09:19:42  MAY 11, 2021"
 set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Lite Edition"
@@ -150,9 +150,6 @@ set_global_assignment -name VERILOG_FILE CheckCollisions.v
 set_global_assignment -name VERILOG_FILE UpdateScore.v
 set_global_assignment -name VERILOG_FILE BCDCounter.v
 set_global_assignment -name VERILOG_FILE simulation/BCDCounter_tb.v
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name VERILOG_FILE simulation/UpdateScore_tb.v
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/LT24FunctionalModel.v -section_id DrawMif_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/DrawMif_tb.v -section_id DrawMif_tb
@@ -162,4 +159,58 @@ set_global_assignment -name EDA_TEST_BENCH_NAME UpdateScore_tb -section_id eda_s
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id UpdateScore_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME UpdateScore_tb -section_id UpdateScore_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/UpdateScore_tb.v -section_id UpdateScore_tb
+set_global_assignment -name VERILOG_FILE simulation/updateScore_tbHardware.v
+set_location_assignment PIN_AJ29 -to display1[0]
+set_location_assignment PIN_AH29 -to display1[1]
+set_location_assignment PIN_AH30 -to display1[2]
+set_location_assignment PIN_AG30 -to display1[3]
+set_location_assignment PIN_AF29 -to display1[4]
+set_location_assignment PIN_AF30 -to display1[5]
+set_location_assignment PIN_AD27 -to display1[6]
+set_location_assignment PIN_AB23 -to display2[0]
+set_location_assignment PIN_AE29 -to display2[1]
+set_location_assignment PIN_AD29 -to display2[2]
+set_location_assignment PIN_AC28 -to display2[3]
+set_location_assignment PIN_AD30 -to display2[4]
+set_location_assignment PIN_AC29 -to display2[5]
+set_location_assignment PIN_AC30 -to display2[6]
+set_location_assignment PIN_AD26 -to display3[0]
+set_location_assignment PIN_AC27 -to display3[1]
+set_location_assignment PIN_AD25 -to display3[2]
+set_location_assignment PIN_AC25 -to display3[3]
+set_location_assignment PIN_AB28 -to display3[4]
+set_location_assignment PIN_AB25 -to display3[5]
+set_location_assignment PIN_AB22 -to display3[6]
+set_global_assignment -name MIF_FILE RandomNumbers.mif
+set_global_assignment -name QIP_FILE RandomNumbers.qip
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_AE26 -to display0[0]
+set_location_assignment PIN_AE27 -to display0[1]
+set_location_assignment PIN_AE28 -to display0[2]
+set_location_assignment PIN_AG27 -to display0[3]
+set_location_assignment PIN_AF28 -to display0[4]
+set_location_assignment PIN_AG28 -to display0[5]
+set_location_assignment PIN_AH28 -to display0[6]
+set_location_assignment PIN_AA24 -to display4[0]
+set_location_assignment PIN_Y23 -to display4[1]
+set_location_assignment PIN_Y24 -to display4[2]
+set_location_assignment PIN_W22 -to display4[3]
+set_location_assignment PIN_W24 -to display4[4]
+set_location_assignment PIN_V23 -to display4[5]
+set_location_assignment PIN_W25 -to display4[6]
+set_location_assignment PIN_V25 -to display5[0]
+set_location_assignment PIN_AA28 -to display5[1]
+set_location_assignment PIN_Y27 -to display5[2]
+set_location_assignment PIN_AB27 -to display5[3]
+set_location_assignment PIN_AB26 -to display5[4]
+set_location_assignment PIN_AA26 -to display5[5]
+set_location_assignment PIN_AA25 -to display5[6]
+set_global_assignment -name MIF_FILE BulletBill.mif
+set_global_assignment -name MIF_FILE Goomba1.mif
+set_global_assignment -name MIF_FILE Goomba2.mif
+set_global_assignment -name QIP_FILE BulletBill.qip
+set_global_assignment -name QIP_FILE Goomba1.qip
+set_global_assignment -name QIP_FILE Goomba2.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
