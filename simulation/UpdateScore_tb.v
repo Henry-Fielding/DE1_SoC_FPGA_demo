@@ -47,12 +47,26 @@ UpdateScore #(
 
 // declare testbench variables
 reg [SCORE_BITWIDTH-1:0] BCD;
+reg [7:0] expectedSegment;
+reg [DISPLAY_MSB-1:0] expectedDisplay;
 integer i;
 integer j;
 integer k;
 integer binary;
+integer nibble;
 
 integer fail;
+
+localparam DISPLAY_0 = 4'h0;
+localparam DISPLAY_1 = 4'h1;
+localparam DISPLAY_2 = 4'h2;
+localparam DISPLAY_3 = 4'h3;
+localparam DISPLAY_4 = 4'h4;
+localparam DISPLAY_5 = 4'h5;
+localparam DISPLAY_6 = 4'h6;
+localparam DISPLAY_7 = 4'h7;
+localparam DISPLAY_8 = 4'h8;
+localparam DISPLAY_9 = 4'h9;
 
 //
 // define test regime
@@ -72,7 +86,9 @@ initial begin
 	for (i = 1; i <= ((10**SCORE_DIGITS) - 1); i = i + 1) begin // check counter through full range
 		binary = i;
 		score_add();
-		@(posedge ready)
+		@(posedge ready) 
+		
+		// binary to bcd
 		BCD = 0;
 		for (j = 0; j < 32; j = j + 1) begin
 			BCD = {BCD[SCORE_BITWIDTH-2:0], binary[31-j]};
@@ -84,7 +100,25 @@ initial begin
 				end
 			end
 		end
-		repeat(10) @(posedge clock);
+		
+		//BCD to display
+		for (j = SCORE_DIGITS; j > 0; j = j - 1) begin
+			nibble = BCD[(4 * (j - 1)) +:4]; // top nibble first
+			case (nibble)
+				DISPLAY_0	:	expectedSegment = 8'b00111111;
+				DISPLAY_1	:	expectedSegment = 8'b00000110;
+				DISPLAY_2	:	expectedSegment = 8'b01011011;
+				DISPLAY_3	:	expectedSegment = 8'b01001111;
+				DISPLAY_4	:	expectedSegment = 8'b01100110;
+				DISPLAY_5	:	expectedSegment = 8'b01101101;
+				DISPLAY_6	:	expectedSegment = 8'b01111101;
+				DISPLAY_7	:	expectedSegment = 8'b00000111;
+				DISPLAY_8	:	expectedSegment = 8'b11111111;
+				DISPLAY_9	:	expectedSegment = 8'b01100111;
+			endcase
+			expectedDisplay = {expectedDisplay[DISPLAY_MSB-9:0], expectedSegment};// bottom end of BCD
+		end
+		
 	end
 		
 		
