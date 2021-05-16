@@ -28,6 +28,10 @@ reg	clock;
 reg	reset;
 reg	enable;
 
+reg	[SCORE_BITWIDTH-1:0]	BCD;
+reg	[7:0] 					expectedSegment;
+reg	[DISPLAY_MSB-1:0] 	expectedDisplay;
+
 // declare dut output signals
 wire 							ready;
 wire	[DISPLAY_MSB-1:0]	display;
@@ -46,17 +50,15 @@ UpdateScore #(
 );
 
 // declare testbench variables
-reg [SCORE_BITWIDTH-1:0] BCD;
-reg [7:0] expectedSegment;
-reg [DISPLAY_MSB-1:0] expectedDisplay;
 integer i;
 integer j;
 integer k;
+integer fail;
 integer binary;
 integer nibble;
+integer random;
 
-integer fail;
-
+// declare local parameter (for BCD to display conversion)
 localparam DISPLAY_0 = 4'h0;
 localparam DISPLAY_1 = 4'h1;
 localparam DISPLAY_2 = 4'h2;
@@ -96,16 +98,34 @@ initial begin
 		$display("All tests successful");
 	end
 	
-//	//
-//	// Reset testing
-//	//
-//	$display(" ");
-//	$display("Stage 2: Reset testing");
-//	$display("----------------------");
-//	reset_testbench();
-//	
+	//
+	// Reset testing
+	//
+	$display(" ");
+	$display("Stage 2: Reset testing");
+	$display("----------------------");
+	reset_testbench();
 	
-$stop;
+	for (i = 0; i < 10; i = i + 1) begin	//	check for 10 random values
+		score_to_random();		// check value after reset
+		reset_dut();
+		autoverify_reset();
+		
+		score_to_random();		// check counting after reseting
+		autoverify_reset_2();
+	end
+	
+	if (fail) begin
+		$display("Failed - see above errors");
+	end else begin 
+		$display("All tests successful");
+	end
+	
+	$display(" "); // padding
+	$display(" ");
+	$display(" ");
+	
+	$stop;
 end
 
 //
@@ -140,10 +160,9 @@ begin
 end
 endtask
 
-//// wait for BCD counter output and compare to expected behaviour
+// wait for BCD counter output and compare to expected behaviour
 task autoverify_display();
 begin
-	fail = 0;
 	fork : f
 		// check if counter value matches expected
 		begin
@@ -168,13 +187,14 @@ begin
 end
 endtask
 
+// convert binary value to BCD using double dabble algorithm 
 task binary_to_BCD();
 begin
 	BCD = 0;
-	for (j = 0; j < 32; j = j + 1) begin
-		BCD = {BCD[SCORE_BITWIDTH-2:0], binary[31-j]};
-		// check each bit
-		for (k = 0; k < SCORE_DIGITS; k = k + 1) begin
+	for (j = 0; j < 32; j = j + 1) begin					// for each bit
+		BCD = {BCD[SCORE_BITWIDTH-2:0], binary[31-j]};	//	shift add bit
+		
+		for (k = 0; k < SCORE_DIGITS; k = k + 1) begin	// check each nibble for where to add 3
 			if (j < 31 && BCD[(k * 4)+:4] > 4) begin
 				BCD[(k * 4)+:4] = BCD[(k * 4)+:4] + 3;
 			end
@@ -183,10 +203,11 @@ begin
 end
 endtask
 
+// convert the BCD value to display
 task BCD_to_display();
 begin
 	for (j = SCORE_DIGITS; j > 0; j = j - 1) begin
-		nibble = BCD[(4 * (j - 1)) +:4]; // top nibble first
+		nibble = BCD[(4 * (j - 1)) +:4]; 	// top nibble first
 		case (nibble)
 			DISPLAY_0	:	expectedSegment = 8'b00111111;
 			DISPLAY_1	:	expectedSegment = 8'b00000110;
@@ -199,10 +220,49 @@ begin
 			DISPLAY_8	:	expectedSegment = 8'b11111111;
 			DISPLAY_9	:	expectedSegment = 8'b01100111;
 		endcase
-		expectedDisplay = {expectedDisplay[DISPLAY_MSB-9:0], expectedSegment};// bottom end of BCD
+		expectedDisplay = {expectedDisplay[DISPLAY_MSB-9:0], expectedSegment};	// shift add nibble to display value
 	end
 end
 endtask
+
+// count to a random score
+task score_to_random();
+begin
+	random = $urandom_range(((100) - 1) ,0); // max range limited to minimise runtime
+	for (j = 1; j <= random; j = j + 1) begin
+		score_add();
+		@(posedge ready);
+	end
+
+end
+endtask
+
+// check score value after reset
+task autoverify_reset();
+begin
+	binary = 0;
+	binary_to_BCD();
+	BCD_to_display();
+	if (display != expectedDisplay) begin
+		fail = 1;
+		$display("fail at: \t count = %0d \t exhibited display = %h \t expected display = %h ", binary, display, expectedDisplay);
+	end
+end
+endtask
+
+// check counting ability after reset
+task autoverify_reset_2();
+begin
+binary = random;
+	binary_to_BCD();
+	BCD_to_display();
+	if (display != expectedDisplay) begin
+		fail = 1;
+		$display("fail at: \t count = %0d \t exhibited display = %h \t expected display = %h ", binary, display, expectedDisplay);
+	end
+end
+endtask
+
 
 //
 // Synchronous clock logic
