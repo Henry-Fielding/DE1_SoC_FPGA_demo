@@ -1,15 +1,15 @@
-/* update score
- * ------------------------
- * By: Henry Fielding
- * For: University of Leeds
- * Date: 14th May 2021
- *
- * Short Description
- * -----------------
- * This module is designed to update the score in BCD for 
- * the seven segement displays
- *
- */
+// 
+// update score
+// ------------------------
+// By: Henry Fielding
+// For: University of Leeds
+// Date: 14th May 2021
+//
+// Short Description
+// -----------------
+// This module is designed to update the score in BCD for 
+// the seven segement displays
+
 
 module UpdateScore #(
 	// declare parameters
