@@ -27,7 +27,7 @@ module UpdateScore #(
 );
 
 // declare local wire/reg
-wire countValue [(SCOREBITWIDTH-1):0];
+wire	[(SCORE_BITWIDTH-1):0]	countValue;
 
 //
 // instantiate modules
@@ -35,7 +35,7 @@ wire countValue [(SCOREBITWIDTH-1):0];
 BCDCounter #(
 	// define parameters
 	.COUNTER_DIGITS	(SCORE_DIGITS	)
-)(
+) counter (
 	// define ports
 	.clock		(clock		),
 	.reset		(reset		),
@@ -48,7 +48,7 @@ BCDCounter #(
 HexTo7SegmentNBit #(
 	// define parameters
 	.DISPLAYS	(SCORE_DIGITS	)
-)(
+) converter (
 	// define ports
 	.hex		(countValue	),
 	.display	(display		)

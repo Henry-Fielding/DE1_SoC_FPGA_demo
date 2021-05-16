@@ -60,6 +60,7 @@ initial begin
 	$display("---------------------------------------------");
 	$display("Testing: %0d bit binary-coded-decimal counter", COUNTER_DIGITS);
 	$display("---------------------------------------------");
+	
 	//
 	// Counter testing
 	//

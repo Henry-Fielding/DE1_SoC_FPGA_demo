@@ -12,7 +12,7 @@
 module BCDCounter #(
 	// declare parameters
 	parameter COUNTER_DIGITS				= 6,
-	parameter COUNTER_BITWIDTH				= COUNTER_DIGITS * 4,
+	parameter COUNTER_BITWIDTH				= 4 * COUNTER_DIGITS,
 	parameter NIBBLE_COUNTER_BITWIDTH	= $clog2(COUNTER_DIGITS + 2)
 )(
 	// declare ports
@@ -20,14 +20,13 @@ module BCDCounter #(
 	input		reset,
 	input		enable,
 	
-	output reg 									ready,
-	output reg	[COUNTER_BITWIDTH-1:0]	countValue
+	output reg 										ready,
+	output reg	[(COUNTER_BITWIDTH-1):0]	countValue
 );
 
 // declare local registers
-reg	[COUNTER_BITWIDTH-1:0] 				countValueTemp;
-reg	[NIBBLE_COUNTER_BITWIDTH-1:0]		nibbleCounter;
-//reg	[32:0]		nibbleCounter;
+reg	[(COUNTER_BITWIDTH-1):0] 			countValueTemp;
+reg	[(NIBBLE_COUNTER_BITWIDTH-1):0]	nibbleCounter;
 reg	[3:0] 									nibble;
 
 // declare local parameters
@@ -77,8 +76,8 @@ always @(posedge clock or posedge reset) begin
 			// check each nibble for 'BCD overflow' (nibble > 9)
 			EXAMINE_NIBBLES_STATE : begin
 				nibbleCounter <= nibbleCounter + ONE_NIBBLE_COUNTER;					// increment nibble
-				if(countValueTemp[(nibbleCounter * 4)+:4] > 9) begin					// check if current nibble is > 9
-					countValueTemp <= countValueTemp + (6 << (nibbleCounter * 4));	// if so add 6 to the offending nibble
+				if(countValueTemp[(4 * nibbleCounter)+:4] > 9) begin					// check if current nibble is > 9
+					countValueTemp <= countValueTemp + (6 << (4 * nibbleCounter));	// if so add 6 to the offending nibble
 				end
 				
 				if (nibbleCounter > COUNTER_DIGITS) begin
