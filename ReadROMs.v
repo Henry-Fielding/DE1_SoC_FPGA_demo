@@ -71,11 +71,25 @@ Floor	ROM5 (
 	.q			(ROMOutBus[5]	)
 );
 
-FloorTile1 ROM6 (
+Goomba1 ROM6 (
 	// define port connections
 	.clock 	(clock			),
 	.address	(ROMAddr			),
 	.q			(ROMOutBus[6]	)
+);
+
+Goomba2 ROM7 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[7]	)
+);
+
+BulletBill ROM8 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[8]	)
 );
 
 Background	ROM15 (
