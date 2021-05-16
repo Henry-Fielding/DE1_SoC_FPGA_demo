@@ -55,7 +55,9 @@ always @(posedge clock or posedge reset) begin
 	end else begin
 		case (state)
 			//	wait to enable input to be disabled
-			IDLE_STATE : begin		
+			IDLE_STATE : begin
+				ready <= 1'b1;
+				
 				if (!enable) begin
 					state <= READY_STATE;
 				end

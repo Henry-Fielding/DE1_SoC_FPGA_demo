@@ -23,6 +23,7 @@ module UpdateSprite (
 );
 
 reg signed [7:0] velocity;
+
 //
 // Declare statemachine registers and parameters
 //
@@ -66,7 +67,7 @@ always @(posedge update or posedge reset) begin
 			end
 			
 			CROUCH_STATE : begin
-				xSprite <= 8'd53;
+				xSprite <= 8'd73;
 				ySprite <= 9'd123;
 				spriteId <= 4'd4;
  
