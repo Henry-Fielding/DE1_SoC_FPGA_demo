@@ -96,4 +96,4 @@ always @(posedge clock or posedge reset) begin
 	end
 end
 
-endmodule
+endmodule 
