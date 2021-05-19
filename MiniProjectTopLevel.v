@@ -27,7 +27,7 @@ module MiniProjectTopLevel (
 	output	[15:0]	LT24Data,
 	output				LT24LCDOn,
 	
-	output reg	[9:0]	LEDs,
+	output		[9:0]	LEDs,
 	output reg  [6:0] display0,
 	output reg  [6:0] display1,
 	output reg  [6:0] display2,
@@ -50,13 +50,13 @@ reg	[ 3:0]	ROMId = 4'd1;
 
 wire				ready;
 
-reg spriteUpdate;
+reg updateSprite;
 wire [3:0] spriteId;
 wire [7:0] xSprite;
 wire [8:0] ySprite;
 
 
-reg collisionUpdate;
+reg updateCollision;
 
 reg  [8:0] yFloor = 9'd100;
 reg [3:0] layer = 4'b0;
@@ -72,6 +72,7 @@ reg [7:0] count = 8'd0;
 wire collision;
 reg collisionHold;
 
+reg [1:0] lives = 3;
 
 //
 // Instatiate  modules
@@ -104,7 +105,7 @@ DrawMif #(
 
 UpdateSprite Sprite (
 	//define port connections
-	.update		(spriteUpdate),	// timing ports
+	.update		(updateSprite),	// timing ports
 	.reset		(reset		),		// TEST (maybe remove)
 	.keys			(keys			),		// general ports
 	
@@ -141,7 +142,7 @@ CheckCollisions #(
 	.Y2_BITWIDTH	(9		)
 ) Collisions (
 	// declare ports
-	.update		(collisionUpdate	),	// timing ports
+	.update		(updateCollision	),	// timing ports
 	.reset		(reset				),
 	.x1			(xSprite				),
 	.y1			(ySprite				),
@@ -169,14 +170,29 @@ UpdateScore #(
 );
 
 
+reg updateLives;
+wire readyLives;
+wire gameOver;
 
+UpdateLives #(
+	.MAX_LIVES (3)
+) Lives (
+	// declare ports
+	.clock	(clock),// timing ports
+	.reset	(reset),
+	.enable 	(updateLives),
+
+	.ready 	(readyLives ),
+	.gameOver(gameOver	),
+	.LEDs		(LEDs			)
+);
 
 //
 //	state machine top level
 //
 
 //reg [3:0] stateTopLevel;
-
+reg [4:0] loop;
 
 
 //
@@ -184,21 +200,22 @@ UpdateScore #(
 //
 
 reg	[3:0]	stateGameLoop;
-localparam	IDLE_STATE	=	4'd0;
-localparam	UPDATE_SPRITE_STATE	=	4'd1;
-localparam	UPDATE_OBSTACLE_STATE	=	4'd2;
-localparam	UPDATE_COLLISION_STATE	=	4'd3;
-localparam	UPDATE_SCORE_STATE	=	4'd4;
-localparam	DRAW_BACKGROUND_STATE	=	4'd5;
-localparam	DRAW_FLOOR_STATE = 4'd6;
-localparam	DRAW_SPRITE_STATE	=	4'd7;
-localparam	DRAW_OBSTACLE_STATE	=	4'd8;
+localparam	IDLE_STATE					= 4'd0;
+localparam	UPDATE_SPRITES_STATE		= 4'd1;
+localparam	CHECK_COLLISIONS_STATE	= 4'd2;
+localparam	UPDATE_LIVES_STATE		= 4'd3;
+localparam	UPDATE_SCORE_STATE		= 4'd4;
+localparam	DRAW_BACKGROUND_STATE	= 4'd5;
+localparam	DRAW_FLOOR_STATE			= 4'd6;
+localparam	DRAW_SPRITE_STATE			= 4'd7;
+localparam	DRAW_OBSTACLE_STATE		= 4'd8;
+localparam	GAME_OVER_STATE			= 4'd9;
+localparam	TEST_STATE					= 4'd10;
 
 always @ (posedge clock) begin
-	LEDs[9] <= collision;
-	LEDs[8] <= collisionHold;
-	LEDs[7] <= passed;
-	LEDs[3:0] <= stateGameLoop;
+	//LEDs[9:7] <= stateGameLoop;
+	
+	//LEDs[2:0] <= (3'b1 << (lives - 1));
 	
 	display0 <= ~display[6:0];
 	display1 <= ~display[14:8];
@@ -211,88 +228,124 @@ end
 always @ (posedge clock or posedge reset) begin // add reset condition
 	if (reset) begin
 		clockhold <= clock10hz;
-		spriteUpdate <= 1'd0;
+		updateSprite <= 1'd0;
+		updateScore <= 1'd0;
+		updateLives <= 1'd0;
 		draw <= 1'd0;
+		collisionHold <= 1'd0;
 		count <= 8'd0;
+		lives <= 1'd0;
+		// add all importat game regs
 		stateGameLoop <= IDLE_STATE;
 	
 	end else begin
 		case (stateGameLoop)
+			// start game loop at the posedge of the 10hz clock
 			IDLE_STATE : begin
-//				LEDs[8:0] <= 9'd1;	// testing
 				if (clock10hz && (clock10hz != clockhold)) begin
-					stateGameLoop <= UPDATE_SPRITE_STATE;
+					stateGameLoop <= UPDATE_SPRITES_STATE;
 					count <= 8'd0;
 				end
 				clockhold <= clock10hz;
 			end
 			
-			UPDATE_SPRITE_STATE : begin
-//				LEDs[8:0] <= 9'd2;		//testing
-				spriteUpdate <= 1'd1;
-				count <= count + 8'd1;
-				
-				if (count > 8'd20) begin // TEST, add ready state instead?
-					spriteUpdate <= 1'd0;
-					count <= 8'd0;
-					stateGameLoop <= UPDATE_OBSTACLE_STATE;
-				end
-			end
 			
-			UPDATE_OBSTACLE_STATE : begin
-//				LEDs[8:0] <= 9'd3;		//testing
+//			TEST_STATE : begin
+//				xOrigin <= 64;
+//				yOrigin <= 100;
+//				ROMId <= 4'd0;
+//				draw <= 1'd1;
+//				count <= count + 8'd1;
+//				if(count > 8'd20 && ready) begin
+//					draw <= 1'd0;
+//					count <= 8'd0;
+//					stateGameLoop <= IDLE_STATE;
+//				end
+//			end
+			
+			// update player and obstacle sprites
+			UPDATE_SPRITES_STATE : begin
+				updateSprite <= 1'd1;		// signal modules to update
 				obstacleUpdate <= 1'd1;
-				count <= count + 8'd1;
 				
-				if (count > 8'd20) begin // TEST, add ready state instead?
-					obstacleUpdate <= 1'd0;
+				count <= count + 8'd1;		// wait 20 clock cycles for modules to update
+				if (count > 8'd20) begin
 					count <= 8'd0;
-					stateGameLoop <= UPDATE_COLLISION_STATE;
+					
+					updateSprite <= 1'd0;	//	turn off update signals
+					obstacleUpdate <= 1'd0;
+					
+					if (passed) begin
+						stateGameLoop <= UPDATE_SCORE_STATE;
+					end else begin
+						stateGameLoop <= CHECK_COLLISIONS_STATE;
+					end
 				end
-			
 			end
 			
-			UPDATE_COLLISION_STATE : begin
-//				LEDs[8:0] <= 9'd4;		//testing
-				collisionUpdate <= 1'd1;
-				count <= count + 8'd1;
+			// check for collision between player sprite and obstacle sprite
+			CHECK_COLLISIONS_STATE : begin
+				updateCollision <= 1'd1;		// signal module to update
 				
-				if (count > 8'd20) begin // TEST, add ready state instead?
-					if (collision) begin
-						collisionHold = 1;
-					end
-					collisionUpdate <= 1'd0;
+				count <= count + 8'd1;			// wait 20 clock cycles for modules to update
+				if (count > 8'd20) begin
 					count <= 8'd0;
-					stateGameLoop <= UPDATE_SCORE_STATE;
-				end
-			
-			end 
-			
-			UPDATE_SCORE_STATE : begin
-//				LEDs[8:0] <= 9'd8;		//testing
-
-				if (passed && !collisionHold) begin
-					updateScore <= 1'd1;
-					count <= count + 8'd1;
 					
-					if (count > 8'd20 && readyScore) begin // TEST, add ready state instead?
-						updateScore <= 1'd0;
-						count <= 8'd0;
+					updateCollision <= 1'd0;	//	turn off update signals
+					
+					if (collision && !collisionHold) begin
+						collisionHold <= 1;
+						stateGameLoop <= UPDATE_LIVES_STATE;
+					end else begin
 						stateGameLoop <= DRAW_BACKGROUND_STATE;
 					end
-				end else if (passed) begin
-					collisionHold = 0;
-					stateGameLoop <= DRAW_BACKGROUND_STATE;
+				end
+			end
+			
+			// update players lives and check for gameover
+			UPDATE_LIVES_STATE : begin
+				updateLives <= 1'd1;
+				
+				count <= count + 8'd1;						// wait 20 clock cycles for modules to update
+				if (count > 8'd20 && readyLives) begin
+					count <= 8'd0;
+					
+					updateLives <= 1'd0;
+					
+					if (gameOver) begin
+						stateGameLoop <= GAME_OVER_STATE;
+					end else begin
+						stateGameLoop <= DRAW_BACKGROUND_STATE;
+					end
+				end
+			end
+			
+			// update the players score 
+			UPDATE_SCORE_STATE : begin
+				if (!collisionHold) begin
+					updateScore <= 1'd1;
+					
+					count <= count + 8'd1;
+					if (count > 8'd20 && readyLives) begin
+						count <= 8'd0;
+						
+						updateScore <= 1'd0;
+						stateGameLoop <= DRAW_BACKGROUND_STATE;
+					end
+					
 				end else begin
+					collisionHold <= 1'd0;
 					stateGameLoop <= DRAW_BACKGROUND_STATE;
 				end
 			end
 			
 			DRAW_BACKGROUND_STATE : begin
-//				LEDs[8:0] <= 9'd16;		//testing
+//				stateGameLoop <= DRAW_FLOOR_STATE;
+//				loop <= 0;
+//			
 				xOrigin <= 239;
 				yOrigin <= 100;
-				ROMId <= 4'd15;
+				ROMId <= 4'd11;
 				draw <= 1'd1;
 				count <= count + 8'd1;
 				if(count > 8'd20 && ready) begin
@@ -300,30 +353,54 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 					count <= 8'd0;
 					stateGameLoop <= DRAW_FLOOR_STATE;
 				end
-				
 			end
 			
 			DRAW_FLOOR_STATE : begin
-//				LEDs[8:0] <= 9'd32;		//testing
-				xOrigin <= 8'd31;
-				yOrigin <= yFloor;
-				ROMId <= 4'd5;
-				draw <= 1'd1;
-				count <= count + 8'd1;
-				if(count > 8'd20 && ready) begin
-					draw <= 1'd0;
+				
+				if (loop < 11) begin
+					xOrigin <= 8'd31;
+					yOrigin <= yFloor + (32 * loop);
+					ROMId <= 4'd5;
+					draw <= 1'd1;
+					count <= count + 8'd1;
+					if(count > 8'd20 && ready) begin
+						count <= 8'd0;
+					
+						draw <= 1'd0;
+						loop <= loop + 1;
+						stateGameLoop <= DRAW_FLOOR_STATE;
+					end
+				end else begin
+					loop <= 0;
 					yFloor <= yFloor - speed;
 					if(yFloor <= 68 + speed) begin
 						yFloor <= 100;
 					end
 					stateGameLoop <= DRAW_SPRITE_STATE;
-					count <= 8'd0;
-				end
+				end 
 			
+			
+//				xOrigin <= 8'd31;
+//				yOrigin <= yFloor + (32 * loop);
+//				ROMId <= 4'd5;
+//				draw <= 1'd1;
+//				count <= count + 8'd1;
+//				if(count > 8'd20 && ready) begin
+//					draw <= 1'd0;
+//					yFloor <= yFloor - speed;
+//					if(yFloor <= 68 + speed) begin
+//						yFloor <= 100;
+//					end
+//					
+//					
+//					
+//					stateGameLoop <= DRAW_SPRITE_STATE;
+//					count <= 8'd0;
+//				end
+//			
 			end
 			
 			DRAW_SPRITE_STATE : begin
-//				LEDs[8:0] <= 9'd64;		//testing
 				xOrigin <= xSprite;
 				yOrigin <= ySprite;
 				ROMId <= spriteId;
@@ -337,7 +414,6 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 			end
 			
 			DRAW_OBSTACLE_STATE : begin
-//				LEDs[8:0] <= 9'd128;		//testing
 				xOrigin <= xObstacle;
 				yOrigin <= yObstacle;
 				ROMId <= obstacleId;
@@ -349,51 +425,39 @@ always @ (posedge clock or posedge reset) begin // add reset condition
 					stateGameLoop <= IDLE_STATE;
 				end
 			end
+			
+			GAME_OVER_STATE : begin
+//				xOrigin <= 239;
+//				yOrigin <= 0;
+//				ROMId <= 4'd10;
+//				draw <= 1'd1;
+//				count <= count + 8'd1;
+//				if(count > 8'd20 && ready) begin
+//					draw <= 1'd0;
+//					count <= 8'd0;
+//				end
+//				
+//				xOrigin <= 119;
+//				yOrigin <= 0;
+//				ROMId <= 4'd11;
+//				draw <= 1'd1;
+//				count <= count + 8'd1;
+//				if(count > 8'd20 && ready) begin
+//					draw <= 1'd0;
+//					count <= 8'd0;
+//				end
+			end
+			
 		endcase
 	end
 end
 
 
-//always @ (posedge clock) begin
-//	if (clock10hz && (clock10hz != clockhold)) begin
-//		refreshScreen <= 1'b1;
-//	end
-//	clockhold <= clock10hz;
-//	
-//	if (draw) begin
-//		draw <= 1'b0;
-//	end else if (refreshScreen) begin
-//		if ((layer == 0) && ready) begin				// draw
-//			// draw background
-//			ROMId = 4'd3;
-//			draw = 1'b1;
-//			
-//			layer <= layer + 1'b1;
-//		end else if ((layer == 1) && ready) begin
-//			// draw player sprite
-//			ROMId = spriteId;
-//			draw = 1'b1;
-//			
-//			
-//			layer <= layer + 1'b1;
-//		end else if (layer > 1) begin
-//			refreshScreen <= 1'b0;
-//			layer <= 4'b0;
-//		end
-//		
-//	end 
-//end
 
 
-// update position
 
-//always @ (posedge clock10hz) begin
-//	if (spriteId < 2) begin
-//		spriteId <= spriteId + 1;
-//	end else begin
-//		spriteId <= 0;
-//	end
-//end
+
+
 
 reg clock10hz = 0;
 reg [31:0] clockcounter = 0;

@@ -86,7 +86,7 @@ set_location_assignment PIN_W20 -to LEDs[7]
 set_location_assignment PIN_W21 -to LEDs[8]
 set_location_assignment PIN_Y21 -to LEDs[9]
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
-set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH UpdateScore_tb -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH UpdateLives_tb -section_id eda_simulation
 set_global_assignment -name EDA_NATIVELINK_SIMULATION_SETUP_SCRIPT "../ELEC5566M-Resources/simulation/load_sim.tcl" -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME DrawMif_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id DrawMif_tb
@@ -115,50 +115,17 @@ set_global_assignment -name VERILOG_FILE WritePixel.v
 set_global_assignment -name VERILOG_FILE DrawSquare.v
 set_global_assignment -name TCL_SCRIPT_FILE set_LCD_pin_locs.tcl
 set_global_assignment -name VERILOG_FILE DrawMif.v
-set_global_assignment -name MIF_FILE smiley.mif
-set_global_assignment -name MIF_FILE smiley10x10.mif
-set_global_assignment -name QIP_FILE ROM.qip
-set_global_assignment -name VERILOG_FILE ROMREADTEST.v
-set_global_assignment -name VERILOG_FILE ROM_tb.v
-set_global_assignment -name MIF_FILE MarioTest.mif
-set_global_assignment -name QIP_FILE Mario1.qip
-set_global_assignment -name QIP_FILE Mario.qip
-set_global_assignment -name MIF_FILE MarioWalk1.mif
-set_global_assignment -name MIF_FILE MarioWalk2.mif
-set_global_assignment -name MIF_FILE MarioWalk3.mif
-set_global_assignment -name QIP_FILE MarioWalk1.qip
-set_global_assignment -name QIP_FILE MarioWalk2.qip
-set_global_assignment -name QIP_FILE MarioWalk3.qip
 set_global_assignment -name VERILOG_FILE ReadROMs.v
-set_global_assignment -name MIF_FILE Backgroundtemp.mif
-set_global_assignment -name QIP_FILE Backgroundtemp.qip
 set_global_assignment -name VERILOG_FILE UpdateSprite.v
-set_global_assignment -name MIF_FILE MarioCrouch.mif
-set_global_assignment -name MIF_FILE MarioJump.mif
-set_global_assignment -name QIP_FILE MarioCrouch.qip
-set_global_assignment -name QIP_FILE MarioJump.qip
-set_global_assignment -name MIF_FILE FloorTile.mif
-set_global_assignment -name MIF_FILE FloorTile1.mif
-set_global_assignment -name QIP_FILE FloorTile1.qip
-set_global_assignment -name MIF_FILE Floor.mif
-set_global_assignment -name QIP_FILE Floor.qip
-set_global_assignment -name MIF_FILE Background.mif
-set_global_assignment -name QIP_FILE Background.qip
 set_global_assignment -name VERILOG_FILE UpdateObstacle.v
-set_global_assignment -name MIF_FILE Obstacle1.mif
 set_global_assignment -name VERILOG_FILE CheckCollisions.v
 set_global_assignment -name VERILOG_FILE UpdateScore.v
 set_global_assignment -name VERILOG_FILE BCDCounter.v
 set_global_assignment -name VERILOG_FILE simulation/BCDCounter_tb.v
 set_global_assignment -name VERILOG_FILE simulation/UpdateScore_tb.v
-set_global_assignment -name EDA_TEST_BENCH_FILE simulation/LT24FunctionalModel.v -section_id DrawMif_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE simulation/DrawMif_tb.v -section_id DrawMif_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE ROM_tb.v -section_id ROMREADTEST_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE simulation/BCDCounter_tb.v -section_id BCDCounter_tb
 set_global_assignment -name EDA_TEST_BENCH_NAME UpdateScore_tb -section_id eda_simulation
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id UpdateScore_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME UpdateScore_tb -section_id UpdateScore_tb
-set_global_assignment -name EDA_TEST_BENCH_FILE simulation/UpdateScore_tb.v -section_id UpdateScore_tb
 set_global_assignment -name VERILOG_FILE simulation/updateScore_tbHardware.v
 set_location_assignment PIN_AJ29 -to display1[0]
 set_location_assignment PIN_AH29 -to display1[1]
@@ -181,11 +148,6 @@ set_location_assignment PIN_AC25 -to display3[3]
 set_location_assignment PIN_AB28 -to display3[4]
 set_location_assignment PIN_AB25 -to display3[5]
 set_location_assignment PIN_AB22 -to display3[6]
-set_global_assignment -name MIF_FILE RandomNumbers.mif
-set_global_assignment -name QIP_FILE RandomNumbers.qip
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_location_assignment PIN_AE26 -to display0[0]
 set_location_assignment PIN_AE27 -to display0[1]
 set_location_assignment PIN_AE28 -to display0[2]
@@ -207,11 +169,31 @@ set_location_assignment PIN_AB27 -to display5[3]
 set_location_assignment PIN_AB26 -to display5[4]
 set_location_assignment PIN_AA26 -to display5[5]
 set_location_assignment PIN_AA25 -to display5[6]
-set_global_assignment -name MIF_FILE BulletBill.mif
-set_global_assignment -name MIF_FILE Goomba1.mif
-set_global_assignment -name MIF_FILE Goomba2.mif
-set_global_assignment -name QIP_FILE BulletBill.qip
-set_global_assignment -name QIP_FILE Goomba1.qip
-set_global_assignment -name QIP_FILE Goomba2.qip
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name VERILOG_FILE UpdateLives.v
+set_global_assignment -name VERILOG_FILE simulation/UpdateLives_tb.v
+set_global_assignment -name EDA_TEST_BENCH_FILE simulation/LT24FunctionalModel.v -section_id DrawMif_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE simulation/DrawMif_tb.v -section_id DrawMif_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE ROM_tb.v -section_id ROMREADTEST_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE simulation/BCDCounter_tb.v -section_id BCDCounter_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE simulation/UpdateScore_tb.v -section_id UpdateScore_tb
+set_global_assignment -name EDA_TEST_BENCH_NAME UpdateLives_tb -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id UpdateLives_tb
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME UpdateLives_tb -section_id UpdateLives_tb
+set_global_assignment -name EDA_TEST_BENCH_FILE simulation/UpdateLives_tb.v -section_id UpdateLives_tb
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name QIP_FILE ROMs/MarioWalk1.qip
+set_global_assignment -name QIP_FILE ROMs/MarioWalk2.qip
+set_global_assignment -name QIP_FILE ROMs/MarioWalk3.qip
+set_global_assignment -name QIP_FILE ROMs/MarioJump.qip
+set_global_assignment -name QIP_FILE ROMs/MarioCrouch.qip
+set_global_assignment -name QIP_FILE ROMs/FloorTile.qip
+set_global_assignment -name QIP_FILE ROMs/Goomba1.qip
+set_global_assignment -name QIP_FILE ROMs/BulletBill.qip
+set_global_assignment -name QIP_FILE ROMs/Goomba2.qip
+set_global_assignment -name QIP_FILE ROMs/RandomNumbers.qip
+set_global_assignment -name QIP_FILE ROMs/IntroScreen.qip
+set_global_assignment -name QIP_FILE ROMs/GameOverScreen.qip
+set_global_assignment -name QIP_FILE ROMs/Background.qip
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

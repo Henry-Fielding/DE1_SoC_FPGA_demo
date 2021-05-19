@@ -56,6 +56,10 @@ wire	[15:0]	ROMOut;
 
 reg	[ 7:0]	counter;		// general purpose
 
+reg [7:0] xplus = 0;
+reg [8:0] yplus = 0;
+reg [3:0] square = 1;
+
 //
 // Instatiate modules
 //
@@ -113,9 +117,10 @@ localparam	READY_STATE				=	4'd1;
 localparam	READ_WIDTH_STATE		=	4'd2;
 localparam	READ_HEIGHT_STATE		=	4'd3;
 localparam	READ_PIXEL_STATE		=	4'd4;
-localparam	SET_PIXELDATA_STATE	=	4'd5;
-localparam	WAIT_STATE				=	4'd6;
-localparam	INCREMENT_STATE		=	4'd7;
+localparam	SET_OFFSET_STATE		=	4'd5;
+localparam	SET_PIXELDATA_STATE	=	4'd6;
+localparam	WAIT_STATE				=	4'd7;
+localparam	INCREMENT_STATE		=	4'd8;
 
 
 always @(posedge clock) begin // TESTING 
@@ -126,6 +131,9 @@ always @(posedge clock or posedge reset) begin
 	if (reset) begin
 		pixelWrite <= 1'd0;
 		ready <= 1'd0;
+		square <= 4'd1;
+		xplus <= 4'd0;
+		yplus <= 4'd0;
 		state <= IDLE_STATE;
 	
 	end else begin
@@ -189,17 +197,36 @@ always @(posedge clock or posedge reset) begin
 				
 				if (counter > 2) begin				// wait 2 clock cycles for ROM output to update then change state
 					pixelData <= ROMOut;
-					state <= SET_PIXELDATA_STATE;
+					state <= SET_OFFSET_STATE;
 					counter <= 8'd0;
 				end
+			end
+			
+			// set pixel offset (for increasing image size)
+			SET_OFFSET_STATE : begin
+				if (square == 1) begin
+					yplus <= 0;
+					xplus <= 0;
+				end else if (square == 2) begin
+					yplus <= 1;
+					xplus <= 0;
+				end else if (square == 3) begin
+					yplus <= 0;
+					xplus <= 1;
+				end else if (square == 4) begin
+					yplus <= 1;
+					xplus <= 1;
+				end
+				
+				state <= SET_PIXELDATA_STATE;
 			end
 			
 			// write the pixel colour to the LCD
 			SET_PIXELDATA_STATE : begin
 				LEDs[8:0] = 9'd32; 					// TESTING
-				if (ROMOut != 16'd1 && (xAddrFrame >= 0 && xAddrFrame <= 319) && (yAddrFrame >= 100 && yAddrFrame <= 419)) begin			// write pixel data to LCD if not 'empty' (empty cells represented as 1'b1)
-					xAddrLCD <= xAddrFrame;
-					yAddrLCD <= yAddrFrame - 100;
+				if (ROMOut != 16'd1 && (xAddrFrame >= 0 && xAddrFrame <= 239) && (yAddrFrame >= 100 && yAddrFrame <= 419)) begin			// write pixel data to LCD if not 'empty' (empty cells represented as 1'b1)
+					xAddrLCD <= (xAddrFrame - xplus);
+					yAddrLCD <= (yAddrFrame + yplus - 100);
 					pixelWrite <= 1'd1;				 
 					
 					if (!pixelReady) begin			
@@ -221,19 +248,45 @@ always @(posedge clock or posedge reset) begin
 		
 			// increment the pixel address
 			INCREMENT_STATE : begin
-				LEDs[8:0] = 9'd128; // TESTING
-				if	(yAddrFrame < (yOrigin + (imgWidth - 1))) begin 				// if not at end of row increment x
-					yAddrFrame <= yAddrFrame + 8'd1;
-					ROMAddr <= ROMAddr + 16'd1;
+//			LEDs[8:0] = 9'd128; // TESTING
+
+				if (square > 3) begin
+					if	(yAddrFrame < (yOrigin + (imgWidth - 1) - 1)) begin 				// if not at end of row increment x
+						yAddrFrame <= yAddrFrame + 8'd2;
+						ROMAddr <= ROMAddr + 16'd1;
+						state <= READ_PIXEL_STATE;
+					end else if (xAddrFrame > (xOrigin - (imgHeight - 1) + 1)) begin	// if end of row is reached reset x, increment y
+						xAddrFrame <= xAddrFrame - 7'd2;
+						yAddrFrame <= yOrigin;
+						ROMAddr <= ROMAddr + 16'd1;
+						state <= READ_PIXEL_STATE;
+					end else begin															// if fully draw, end operation
+						state <= IDLE_STATE;
+					end
+					square <= 1;
+					
+				end else begin 
 					state <= READ_PIXEL_STATE;
-				end else if (xAddrFrame > (xOrigin - (imgHeight - 1))) begin	// if end of row is reached reset x, increment y
-					xAddrFrame <= xAddrFrame - 7'd1;
-					yAddrFrame <= yOrigin;
-					ROMAddr <= ROMAddr + 16'd1;
-					state <= READ_PIXEL_STATE;
-				end else begin															// if fully draw, end operation
-					state <= IDLE_STATE;
+					square <= square + 1;
 				end
+					
+				
+				
+				
+			
+//				LEDs[8:0] = 9'd128; // TESTING
+//				if	(yAddrFrame < (yOrigin + (imgWidth - 1))) begin 				// if not at end of row increment x
+//					yAddrFrame <= yAddrFrame + 8'd1;
+//					ROMAddr <= ROMAddr + 16'd1;
+//					state <= READ_PIXEL_STATE;
+//				end else if (xAddrFrame > (xOrigin - (imgHeight - 1))) begin	// if end of row is reached reset x, increment y
+//					xAddrFrame <= xAddrFrame - 7'd1;
+//					yAddrFrame <= yOrigin;
+//					ROMAddr <= ROMAddr + 16'd1;
+//					state <= READ_PIXEL_STATE;
+//				end else begin															// if fully draw, end operation
+//					state <= IDLE_STATE;
+//				end
 				
 			end
 		endcase

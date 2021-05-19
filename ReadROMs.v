@@ -64,7 +64,7 @@ MarioCrouch	ROM4 (
 	.q			(ROMOutBus[4]	)
 );
 
-Floor	ROM5 (
+FloorTile	ROM5 (
 	// define port connections
 	.clock 	(clock			),
 	.address	(ROMAddr			),
@@ -92,11 +92,25 @@ BulletBill ROM8 (
 	.q			(ROMOutBus[8]	)
 );
 
-Background	ROM15 (
+IntroScreen ROM9 (
 	// define port connections
 	.clock 	(clock			),
 	.address	(ROMAddr			),
-	.q			(ROMOutBus[15]	)
+	.q			(ROMOutBus[9]	)
+);
+
+GameOverScreen ROM10 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[10]	)
+);
+
+Background	ROM11 (
+	// define port connections
+	.clock 	(clock			),
+	.address	(ROMAddr			),
+	.q			(ROMOutBus[11]	)
 );
 
 //
