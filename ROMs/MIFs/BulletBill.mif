@@ -1,0 +1,86 @@
+-- Copyright (C) 2017  Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License 
+-- Subscription Agreement, the Intel Quartus Prime License Agreement,
+-- the Intel FPGA IP License Agreement, or other applicable license
+-- agreement, including, without limitation, that your use is for
+-- the sole purpose of programming logic devices manufactured by
+-- Intel and sold by Intel or its authorized distributors.  Please
+-- refer to the applicable agreement for further details.
+
+-- Quartus Prime generated Memory Initialization File (.mif)
+
+WIDTH=16;
+DEPTH=258;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=HEX;
+
+CONTENT BEGIN
+	[0..1]  :   0020;
+	[2..7]  :   0001;
+	[8..13]  :   0000;
+	[14..15]  :   0001;
+	[16..17]  :   0000;
+	[18..21]  :   0001;
+	[22..24]  :   0000;
+	[25..29]  :   FFFF;
+	[30..31]  :   0000;
+	[32..33]  :   FFFF;
+	[34..35]  :   0001;
+	[36..39]  :   0000;
+	40   :   FFFF;
+	[41..45]  :   AD55;
+	46   :   0000;
+	47   :   FFFF;
+	[48..49]  :   AD55;
+	50   :   0001;
+	[51..53]  :   0000;
+	54   :   FFFF;
+	55   :   0000;
+	56   :   AD55;
+	[57..62]  :   0000;
+	63   :   AD55;
+	[64..65]  :   0000;
+	66   :   0001;
+	[67..68]  :   0000;
+	[69..70]  :   FFFF;
+	[71..82]  :   0000;
+	83   :   FFFF;
+	84   :   0000;
+	[85..86]  :   FFFF;
+	[87..98]  :   0000;
+	[99..101]  :   FFFF;
+	[102..106]  :   0000;
+	[107..108]  :   FFFF;
+	[109..119]  :   0000;
+	[120..121]  :   FFFF;
+	122  :   0000;
+	[123..125]  :   FFFF;
+	[126..134]  :   0000;
+	[135..139]  :   FFFF;
+	[140..141]  :   AD55;
+	[142..150]  :   0000;
+	151  :   AD55;
+	[152..153]  :   FFFF;
+	[154..156]  :   AD55;
+	[157..167]  :   0000;
+	[168..170]  :   AD55;
+	[171..177]  :   0000;
+	178  :   0001;
+	[179..193]  :   0000;
+	194  :   0001;
+	[195..209]  :   0000;
+	[210..211]  :   0001;
+	[212..225]  :   0000;
+	[226..229]  :   0001;
+	[230..241]  :   0000;
+	[242..247]  :   0001;
+	[248..253]  :   0000;
+	[254..255]  :   0001;
+	[256..257]  :   0000;
+END;

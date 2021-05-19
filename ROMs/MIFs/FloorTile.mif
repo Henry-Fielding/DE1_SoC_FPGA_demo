@@ -1,0 +1,124 @@
+-- Copyright (C) 2017  Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License 
+-- Subscription Agreement, the Intel Quartus Prime License Agreement,
+-- the Intel FPGA IP License Agreement, or other applicable license
+-- agreement, including, without limitation, that your use is for
+-- the sole purpose of programming logic devices manufactured by
+-- Intel and sold by Intel or its authorized distributors.  Please
+-- refer to the applicable agreement for further details.
+
+-- Quartus Prime generated Memory Initialization File (.mif)
+
+WIDTH=16;
+DEPTH=258;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=HEX;
+
+CONTENT BEGIN
+	[0..1]  :   0020;
+	2    :   FB20;
+	[3..11]  :   F60F;
+	12   :   FB20;
+	[13..16]  :   F60F;
+	17   :   FB20;
+	18   :   F60F;
+	[19..26]  :   FB20;
+	27   :   0000;
+	28   :   F60F;
+	[29..32]  :   FB20;
+	33   :   0000;
+	34   :   F60F;
+	[35..42]  :   FB20;
+	43   :   0000;
+	44   :   F60F;
+	[45..48]  :   FB20;
+	49   :   0000;
+	50   :   F60F;
+	[51..58]  :   FB20;
+	59   :   0000;
+	60   :   F60F;
+	[61..64]  :   FB20;
+	65   :   0000;
+	66   :   F60F;
+	[67..74]  :   FB20;
+	75   :   0000;
+	76   :   F60F;
+	77   :   0000;
+	[78..80]  :   FB20;
+	81   :   0000;
+	82   :   F60F;
+	[83..90]  :   FB20;
+	91   :   0000;
+	92   :   FB20;
+	[93..96]  :   0000;
+	97   :   FB20;
+	98   :   F60F;
+	[99..106]  :   FB20;
+	107  :   0000;
+	[108..112]  :   F60F;
+	113  :   0000;
+	114  :   F60F;
+	[115..122]  :   FB20;
+	123  :   0000;
+	124  :   F60F;
+	[125..128]  :   FB20;
+	129  :   0000;
+	130  :   F60F;
+	[131..138]  :   FB20;
+	139  :   0000;
+	140  :   F60F;
+	[141..144]  :   FB20;
+	145  :   0000;
+	146  :   F60F;
+	[147..154]  :   FB20;
+	155  :   0000;
+	156  :   F60F;
+	[157..160]  :   FB20;
+	161  :   0000;
+	162  :   F60F;
+	163  :   0000;
+	[164..169]  :   FB20;
+	170  :   0000;
+	171  :   F60F;
+	[172..176]  :   FB20;
+	177  :   0000;
+	[178..179]  :   F60F;
+	[180..181]  :   0000;
+	[182..185]  :   FB20;
+	186  :   0000;
+	187  :   F60F;
+	[188..192]  :   FB20;
+	193  :   0000;
+	194  :   F60F;
+	195  :   FB20;
+	[196..197]  :   F60F;
+	[198..201]  :   0000;
+	202  :   F60F;
+	[203..208]  :   FB20;
+	209  :   0000;
+	210  :   F60F;
+	[211..213]  :   FB20;
+	[214..216]  :   F60F;
+	217  :   0000;
+	218  :   F60F;
+	[219..224]  :   FB20;
+	225  :   0000;
+	226  :   F60F;
+	[227..232]  :   FB20;
+	233  :   0000;
+	234  :   F60F;
+	[235..239]  :   FB20;
+	[240..241]  :   0000;
+	242  :   FB20;
+	[243..248]  :   0000;
+	249  :   FB20;
+	250  :   F60F;
+	[251..256]  :   0000;
+	257  :   FB20;
+END;

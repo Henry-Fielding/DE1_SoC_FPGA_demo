@@ -1,0 +1,89 @@
+-- Copyright (C) 2017  Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License 
+-- Subscription Agreement, the Intel Quartus Prime License Agreement,
+-- the Intel FPGA IP License Agreement, or other applicable license
+-- agreement, including, without limitation, that your use is for
+-- the sole purpose of programming logic devices manufactured by
+-- Intel and sold by Intel or its authorized distributors.  Please
+-- refer to the applicable agreement for further details.
+
+-- Quartus Prime generated Memory Initialization File (.mif)
+
+WIDTH=16;
+DEPTH=258;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=HEX;
+
+CONTENT BEGIN
+	[0..1]  :   0020;
+	[2..7]  :   0001;
+	[8..11]  :   FB20;
+	[12..22]  :   0001;
+	[23..28]  :   FB20;
+	[29..37]  :   0001;
+	[38..45]  :   FB20;
+	[46..52]  :   0001;
+	[53..62]  :   FB20;
+	[63..67]  :   0001;
+	68   :   FB20;
+	[69..70]  :   0000;
+	[71..76]  :   FB20;
+	[77..78]  :   0000;
+	79   :   FB20;
+	[80..82]  :   0001;
+	[83..85]  :   FB20;
+	86   :   FFFF;
+	87   :   0000;
+	[88..91]  :   FB20;
+	92   :   0000;
+	93   :   FFFF;
+	[94..96]  :   FB20;
+	[97..98]  :   0001;
+	[99..101]  :   FB20;
+	102  :   FFFF;
+	[103..108]  :   0000;
+	109  :   FFFF;
+	[110..112]  :   FB20;
+	113  :   0001;
+	[114..117]  :   FB20;
+	118  :   FFFF;
+	119  :   0000;
+	120  :   FFFF;
+	[121..122]  :   FB20;
+	123  :   FFFF;
+	124  :   0000;
+	125  :   FFFF;
+	[126..133]  :   FB20;
+	[134..136]  :   FFFF;
+	[137..138]  :   FB20;
+	[139..141]  :   FFFF;
+	[142..161]  :   FB20;
+	162  :   0001;
+	[163..166]  :   FB20;
+	[167..172]  :   F60F;
+	[173..176]  :   FB20;
+	[177..181]  :   0001;
+	[182..189]  :   F60F;
+	[190..195]  :   0001;
+	[196..197]  :   0000;
+	[198..205]  :   F60F;
+	[206..210]  :   0001;
+	[211..215]  :   0000;
+	[216..220]  :   F60F;
+	[221..222]  :   0000;
+	[223..226]  :   0001;
+	[227..232]  :   0000;
+	[233..235]  :   F60F;
+	[236..238]  :   0000;
+	[239..243]  :   0001;
+	[244..248]  :   0000;
+	[249..250]  :   0001;
+	[251..253]  :   0000;
+	[254..257]  :   0001;
+END;
