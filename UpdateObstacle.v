@@ -14,8 +14,8 @@ module UpdateObstacle (
 	// declare ports
 	input					update,	// timing ports
 	input					reset,
-	input	[3:0]			speed,
-	input [7:0]			randomSeed,
+	input	[8:0]			speed,
+	input [6:0]			randomSeed,
 	
 	output reg	[ 7:0]	xSprite,
 	output reg	[ 8:0]	ySprite,
@@ -23,7 +23,7 @@ module UpdateObstacle (
 	output reg				passed
 );
 
-reg	[7:0] ROMAddr;
+reg	[6:0] ROMAddr;
 wire			randomNumber;
 
 RandomNumbers	ROM (
