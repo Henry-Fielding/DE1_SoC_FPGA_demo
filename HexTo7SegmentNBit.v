@@ -10,9 +10,9 @@
 
 module HexTo7SegmentNBit #(
 	// declare parameters
-	parameter DISPLAYS = 6,
-	parameter HEX_MSB = (4 * DISPLAYS) - 1,
-	parameter DISPLAY_MSB = (8 * DISPLAYS) - 1
+	parameter DISPLAYS		= 6,
+	parameter HEX_MSB			= (4 * DISPLAYS) - 1,
+	parameter DISPLAY_MSB	= (8 * DISPLAYS) - 1
 )(
 	// declare ports
 	input		[HEX_MSB:0		]	hex,
