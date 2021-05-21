@@ -106,7 +106,6 @@ set_global_assignment -name VERILOG_FILE simulation/DrawMif_tb.v
 set_global_assignment -name SDC_FILE LT24Display.sdc
 set_global_assignment -name VERILOG_FILE LT24Display.v
 set_global_assignment -name VERILOG_FILE MiniProjectTopLevel.v
-set_global_assignment -name VERILOG_FILE WritePixel.v
 set_global_assignment -name TCL_SCRIPT_FILE set_LCD_pin_locs.tcl
 set_global_assignment -name VERILOG_FILE DrawMif.v
 set_global_assignment -name VERILOG_FILE ReadROMs.v
