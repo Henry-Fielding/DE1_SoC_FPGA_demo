@@ -1,18 +1,18 @@
 //
-//N-bit Hex to seven segment Encoder
+//N-Digit Hex to seven segment Encoder
 //-----------------------------
 //By: Henry Fielding
 //Date: 14/03/2021
 //
 //Description
 //------------
-// A module to Encode a N bit hex value for display on a seven segment displays
+// A module to Encode a N bit hex value for display on a seven segment DIGITS
 
-module HexTo7SegmentNBit #(
+module HexTo7SegmentNDigit #(
 	// declare parameters
-	parameter DISPLAYS		= 6,
-	parameter HEX_MSB			= (4 * DISPLAYS) - 1,
-	parameter DISPLAY_MSB	= (8 * DISPLAYS) - 1
+	parameter DIGITS			= 6,
+	parameter HEX_MSB			= (4 * DIGITS) - 1,
+	parameter DISPLAY_MSB	= (8 * DIGITS) - 1
 )(
 	// declare ports
 	input		[HEX_MSB:0		]	hex,
@@ -22,8 +22,8 @@ module HexTo7SegmentNBit #(
 genvar i;
 
 generate
-	// instantiate a HexTo7Segment encoders for each seven segment displays
-	for (i = 1; i <= DISPLAYS; i = i + 1) begin : encoder_loop
+	// instantiate a HexTo7Segment encoders for each seven segment DIGITS
+	for (i = 1; i <= DIGITS; i = i + 1) begin : encoder_loop
 		HexTo7Segment encoder (
 			// define connections
 			.hex 			(hex		[(4 * i) - 1 -: 4]	),

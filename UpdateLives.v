@@ -1,16 +1,17 @@
 //
-// Update player lives
-// ------------------------
+// Update lives (N lives)
+// ----------------------
 // By: Henry Fielding
 // For: University of Leeds
 // Date: 17th May 2021
 //
 // Short Description
 // -----------------
-// This module is designed to update the player lives
+// This module is a counter designed to update the player lives based on the max lives and collisions
+// and display them as an LED output.
 
 
-module UpdateLives #(
+module UpdateLivesNLives #(
 	parameter MAX_LIVES	= 3
 )(
 	// declare ports
@@ -20,24 +21,21 @@ module UpdateLives #(
 	
 	output reg			ready,
 	output reg 			gameOver,
-	output reg [9:0]	LEDs,
-	
-	output reg [3:0] lives
+	output reg [9:0]	LEDs
 );
-
-// declare local registers
-//reg [3:0] lives = MAX_LIVES;
 
 //
 // declare statemachine registers and statenames
 //
-reg [3:0] state;	// top level statemachine
+// top level statemachine
+reg [3:0] state					= 4'd0;
 localparam IDLE_STATE			= 4'd0;
 localparam READY_STATE			= 4'd1;
 localparam CHECK_LIVES_STATE	= 4'd2;
 localparam GAMEOVER_STATE		= 4'd3;
 
 // lives to LEDs substatemachine
+reg [3:0] lives 	= MAX_LIVES;	
 localparam LEDs_0	= 4'd0;
 localparam LEDs_1	= 4'd1;
 localparam LEDs_2	= 4'd2;
@@ -55,6 +53,7 @@ localparam LEDs_10= 4'd10;
 //
 always @(posedge clock or posedge reset) begin
 	if (reset) begin
+		ready		<= 1'd0;
 		gameOver	<= 1'd0;
 		lives		<= MAX_LIVES;
 		state		<= IDLE_STATE;
@@ -72,7 +71,7 @@ always @(posedge clock or posedge reset) begin
 			
 			// decrements lives when enable bit set
 			READY_STATE : begin
-				ready	<= 1'b1;
+				ready	<= 1'd1;
 				
 				if (enable) begin
 					ready	<= 1'd0;
@@ -81,9 +80,9 @@ always @(posedge clock or posedge reset) begin
 				end
 			end
 			
-			//
+			// check if player lives is greater than zero
 			CHECK_LIVES_STATE : begin
-				if (lives >= 1) begin
+				if (lives > 0) begin
 					state	<= IDLE_STATE;
 				end else begin
 					state	<= GAMEOVER_STATE;
@@ -94,7 +93,7 @@ always @(posedge clock or posedge reset) begin
 			GAMEOVER_STATE : begin
 				ready <= 1'd1;
 				gameOver <= 1'd1;
-			end
+			end	
 		endcase
 	end
 end
@@ -103,6 +102,7 @@ end
 // define substate machine behaviour
 //
 always @(posedge clock) begin
+	// display player lives on LEDs
 	case (lives)
 		LEDs_0	:	LEDs = 10'b0000000000;
 		LEDs_1	:	LEDs = 10'b0000000001;

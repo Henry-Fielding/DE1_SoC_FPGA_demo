@@ -7,35 +7,38 @@
 //
 // Short Description
 // -----------------
-// This module is designed to update the position of the obstacle
+// This module is designed to check for collisions between the player sprite and the obstacle
+// based on the position and dimensions of each object.
 
 module CheckCollisions #(
 	// declare parameters
-	parameter X1_BITWIDTH = 8,
-	parameter Y1_BITWIDTH = 9,
-	parameter X2_BITWIDTH = 8,
-	parameter Y2_BITWIDTH = 9
+	parameter X_BITWIDTH = 8,
+	parameter Y_BITWIDTH = 9
 )(
 	// declare ports
-	input						update,
-	input						reset,
-	input	[X1_BITWIDTH-1:0]	x1,
-	input	[Y1_BITWIDTH-1:0]	y1,
-	input	[X2_BITWIDTH-1:0]	x2,
-	input	[Y2_BITWIDTH-1:0]	y2,
-	input [3:0]					spriteId,
-	input [3:0]					obstacleId,
+	input							update,
+	input							reset,
+	input	[X_BITWIDTH-1:0]	xSprite,
+	input	[Y_BITWIDTH-1:0]	ySprite,
+	input	[3:0]					IdSprite,
+	input	[X_BITWIDTH-1:0]	xObstacle,
+	input	[Y_BITWIDTH-1:0]	yObstacle,
+	input	[3:0]					IdObstacle,
 
-	output reg 		collision
+	output reg	collision
 );
 
-// declare local registers
-reg 	[ 8:0]	width1;
-reg	[ 9:0]	height1;
-reg 	[ 8:0]	width2;
-reg	[ 9:0]	height2;
+//
+// declare local wires and registers
+//
+reg	[ 8:0]	widthSprite;
+reg	[ 9:0]	heightSprite;
+reg	[ 8:0]	widthObstacle;
+reg	[ 9:0]	heightObstacle;
 
+//
 // declare local parameters
+//
 localparam WIDTH_STAND		= 32;
 localparam HEIGHT_STAND		= 64;
 localparam WIDTH_CROUCH		= 36;
@@ -47,24 +50,24 @@ localparam OBSTACLE_HEIGHT	= 32;
 // Define module logic
 //
 always @(posedge update) begin
-	// check sprite position and set dimensions (crouch == 4 stand != 4)
-	if (spriteId == 4) begin
-		width1	<= WIDTH_CROUCH;
-		height1	<= HEIGHT_CROUCH;
+	// set sprite width and height based on sprite iD (crouch == 4 stand != 4)
+	if (IdSprite == 4) begin
+		widthSprite		<= WIDTH_CROUCH;
+		heightSprite	<= HEIGHT_CROUCH;
 	end else begin
-		width1	<= WIDTH_STAND;
-		height1	<= HEIGHT_STAND;
+		widthSprite		<= WIDTH_STAND;
+		heightSprite	<= HEIGHT_STAND;
 	end
-	width2	<= OBSTACLE_WIDTH;
-	height2	<= OBSTACLE_HEIGHT;
+	
+	// set obstacle width and height
+	widthObstacle	<= OBSTACLE_WIDTH;
+	heightObstacle	<= OBSTACLE_HEIGHT;
 
-	// check collisions
-	if ((y1 < y2 + width2) && (y1 + width1 > y2) && (x1 > x2 - height2) && (x1 - height1 < x2)) begin
-		collision <= 1'b1;
-	end else begin
-		collision <= 1'b0;
-	end
-
+	// check for overlap of sprite and obstacle
+	collision	<= (ySprite < yObstacle + widthObstacle) 
+					&& (ySprite + widthSprite > yObstacle) 
+					&& (xSprite > xObstacle - heightObstacle) 
+					&& (xSprite - heightSprite < xObstacle);
 end
 
 endmodule 

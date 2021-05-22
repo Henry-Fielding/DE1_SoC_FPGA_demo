@@ -1,98 +1,106 @@
-/*
- * Update player position
- * ------------------------
- * By: Henry Fielding
- * For: University of Leeds
- * Date: 13th May 2021
- *
- * Short Description
- * -----------------
- * This module is designed to update the player position based on user inputs
- *
- */
+//
+// Update player sprite
+// ------------------------
+// By: Henry Fielding
+// For: University of Leeds
+// Date: 13th May 2021
+//
+// Short Description
+// -----------------
+// This module is designed to update the player characters position and sprite variation
+// (jump, run , crouch, ect) based on user inputs and game timing.
 
 module UpdateSprite (
 	// declare ports
-	input					update,	// timing ports
-	input					reset,
-	input		[ 3:0]	keys,		// general ports
+	input				update,
+	input				reset,
+	input	[ 3:0]	keys,
 	
 	output reg	[ 7:0]	xSprite,
 	output reg	[ 8:0]	ySprite,
-	output reg	[ 3:0] 	spriteId
+	output reg	[ 3:0]	IdSprite
 );
 
-reg signed [7:0] velocity;
+//
+// Declare local registers.wires
+//
+reg signed	[7:0]	velocity;
 
 //
 // Declare statemachine registers and parameters
 //
-reg	[3:0]	state;
-localparam	STAND_STATE		=	4'd0;
-localparam	RUN_STATE		=	4'd1;
-localparam	JUMP_STATE		=	4'd2;
-localparam	CROUCH_STATE	=	4'd3;
+reg	[3:0]	state				= 4'd0;
+localparam	RUN_STATE		= 4'd0;
+localparam	CROUCH_STATE	= 4'd1;
+localparam	JUMP_STATE		= 4'd2;
 
+//
+// Define statemachine behaviour
+//
 always @(posedge update or posedge reset) begin
 	if (reset) begin
-		state <= 4'd1;
+		xSprite	<= 8'd95;
+		ySprite	<= 9'd129;
+		IdSprite	<= 4'd0;
+		
+		state		<= RUN_STATE;
 	end else begin
 		case (state)
+			// set position and update running animation
 			RUN_STATE : begin
-				xSprite <= 8'd95;
-				ySprite <= 9'd129;
-				//task to update ROMid
-				//if button pressed move to jump
+				xSprite	<= 8'd95;				// player sprite  position is constant during running
+				ySprite	<= 9'd129;
 				update_running_animation();
 				
-				if (!keys[0]) begin
-					state <= JUMP_STATE;
-					velocity <= 8'd14;
-				end
+				// change to jump/crouch state if buttons pressed 
+				// (crouch takes priority as it is easier for the player to recover 
+				// from in the case of an accidental double click)
 				if (!keys[1]) begin
-					state <= CROUCH_STATE;
+					state		<= CROUCH_STATE;
+				end else if (!keys[0]) begin
+					velocity	<= 8'd14;			// set initial jump velocity
+					state		<= JUMP_STATE;
 				end
 			end
 			
+			// set player sprite to crouch
+			CROUCH_STATE : begin
+				xSprite	<= 8'd73;		// player sprites position is constant during crouch
+				ySprite	<= 9'd123;
+				IdSprite	<= 4'd4;
+ 
+				//	revert to run state as soon as button released
+				if (keys[1]) begin
+					state	<= RUN_STATE;
+				end
+			end
+			
+			// set player sprite to jump and update velocity/position
 			JUMP_STATE : begin 
-				xSprite <= xSprite + velocity;
-				ySprite <= 9'd129;
-				velocity <= velocity - 8'd2;
-				spriteId <= 4'd3;
+				xSprite	<= xSprite + velocity;	// update player sprites vertical position based on current velocity
+				ySprite	<= 9'd129;
+				IdSprite	<= 4'd3;
+				velocity	<= velocity - 8'd2;		// reduce velocity each loop
 				
-				// if velocity is negative and sprite about to hit ground
+				// if the player sprite is about to hit ground return to run state.
 				if (velocity[7] == 1 && xSprite <= 111) begin
 					state <= RUN_STATE;
 				end
-			end
-			
-			CROUCH_STATE : begin
-				xSprite <= 8'd73;
-				ySprite <= 9'd123;
-				spriteId <= 4'd4;
- 
-				//	if height = floor move to run
-				if (keys[1]) begin
-					state <= RUN_STATE;
-				end
-			end
-			
+			end	
 		endcase
 	end
 end
 
+//
+// define statemachine tasks
+//
+// increment to next running sprite
 task update_running_animation () ;
-	if (spriteId < 4'd2) begin
-		spriteId <= spriteId + 4'd1;
+	if (IdSprite < 2) begin
+		IdSprite	<= IdSprite + 4'd1;
 	end else begin
-		spriteId <= 4'd0;
+		IdSprite	<= 4'd0;
 	end
-
-endtask
-
-task update_jump_height () ;
-	
-
 endtask
 
 endmodule 

@@ -9,7 +9,7 @@
 // -----------------
 // This module is designed to count up in binary coded decimal
 
-module BCDCounter #(
+module BCDCounterNDigit #(
 	// declare parameters
 	parameter COUNTER_DIGITS				= 6,
 	parameter COUNTER_BITWIDTH				= 4 * COUNTER_DIGITS,
@@ -24,19 +24,25 @@ module BCDCounter #(
 	output reg	[(COUNTER_BITWIDTH-1):0]	countValue
 );
 
-// declare local registers
+//
+// declare local wires and registers
+//
 reg	[(COUNTER_BITWIDTH-1):0] 			countValueTemp;
 reg	[(NIBBLE_COUNTER_BITWIDTH-1):0]	nibbleCounter;
 reg	[3:0] 									nibble;
 
+//
 // declare local parameters
+//
 localparam ZERO_COUNT				= {(COUNTER_BITWIDTH){1'd0}};
 localparam ONE_COUNT					= {{(COUNTER_BITWIDTH-1){1'd0}}, 1'd1};
 localparam ZERO_NIBBLE_COUNTER	= {(NIBBLE_COUNTER_BITWIDTH){1'd0}};
 localparam ONE_NIBBLE_COUNTER		= {{(NIBBLE_COUNTER_BITWIDTH-1){1'd0}}, 1'd1};
 
+//
 // declare state machine registers and statenames
-reg	[3:0]	state;
+//
+reg	[3:0]	state						= 4'd0;
 localparam IDLE_STATE				= 4'd0;
 localparam READY_STATE				= 4'd1;
 localparam EXAMINE_NIBBLES_STATE	= 4'd3;
@@ -47,16 +53,15 @@ localparam UPDATE_OUTPUT_STATE	= 4'd4;
 //
 always @(posedge clock or posedge reset) begin
 	if (reset) begin
-		ready				<= 1'b0;
+		ready				<= 1'd0;
 		countValueTemp	<= ZERO_COUNT;
 		countValue		<= ZERO_COUNT;
 		state				<= IDLE_STATE;
-		
 	end else begin
 		case (state)
 			//	wait to enable input to be disabled
 			IDLE_STATE : begin
-				ready <= 1'b1;
+				ready <= 1'd1;
 				
 				if (!enable) begin
 					state <= READY_STATE;
@@ -65,10 +70,10 @@ always @(posedge clock or posedge reset) begin
 			
 			// increment counter when enable bit set
 			READY_STATE : begin		
-				ready <= 1'b1;
+				ready <= 1'd1;
 				
 				if (enable) begin
-					ready				<= 1'b0;
+					ready				<= 1'd0;
 					countValueTemp	<= countValueTemp + ONE_COUNT;
 					nibbleCounter	<= ZERO_NIBBLE_COUNTER;
 					state				<= EXAMINE_NIBBLES_STATE;
