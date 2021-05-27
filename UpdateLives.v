@@ -10,7 +10,6 @@
 // This module is a counter designed to update the player lives based on the max lives and collisions
 // and display them as an LED output.
 
-
 module UpdateLivesNLives #(
 	parameter MAX_LIVES	= 3
 )(
@@ -20,8 +19,8 @@ module UpdateLivesNLives #(
 	input		enable,
 	
 	output reg			ready,
-	output reg 			gameOver,
-	output reg [9:0]	LEDs
+	output reg			gameOver,
+	output reg	[9:0]	LEDs
 );
 
 //

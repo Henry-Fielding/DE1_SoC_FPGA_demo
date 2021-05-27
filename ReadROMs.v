@@ -11,7 +11,6 @@
 // selected ROM module, functioning as a 16 bit mulitplexer. 
 // Unused ROMids output 0x0000 for all input addresses.
 
-
 module ReadROMs (
 	// declare ports
 	input				clock,

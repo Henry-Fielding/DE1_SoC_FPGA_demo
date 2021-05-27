@@ -12,6 +12,7 @@
 // modules programmes a game.
  
 module MiniProjectTopLevel (
+	// define port connections
 	input				clock,
 	input				resetHardware,
 	input	[ 3:0]	keys,
@@ -36,9 +37,9 @@ module MiniProjectTopLevel (
 //
 // declare local registers/wires
 //
-reg	clock10hz;						// 10hz clock
-reg	[31:0] clockcounter;
-reg	clockhold;
+reg				clock10hz;			// 10hz clock
+reg	[31:0]	clockcounter;
+reg				clockhold;
 
 reg				updateLCD;			// LCD connections
 reg	[ 7:0]	xOrigin;
@@ -46,10 +47,10 @@ reg	[ 8:0]	yOrigin;
 reg	[ 3:0]	ROMId;
 wire				readyLCD;
 
-reg 			updateSprite;			// updates sprite connections
-wire [ 7:0]	xSprite;
-wire [ 8:0]	ySprite;
-wire [ 3:0]	spriteId;
+reg				updateSprite;		// updates sprite connections
+wire	[ 7:0]	xSprite;
+wire	[ 8:0]	ySprite;
+wire	[ 3:0]	spriteId;
 
 reg				obstacleUpdate;	// update obstacles connections
 wire	[ 7:0]	xObstacle;
@@ -61,23 +62,22 @@ reg	updateCollision;				// check collisions connections
 wire	collision;
 reg	collisionHold;
 
-reg	updateScore;					// update score connections
-wire	readyScore;
-wire	[23:0] display;
-wire	gameOver;
+reg				updateScore;		// update score connections
+wire				readyScore;
+wire	[23:0]	display;
+wire				gameOver;
 
 reg	updateLives;					// update lives connections
 wire	readyLives;
 
-wire	reset;							// general purpose module variables
-reg	resetSoftware;
+wire				reset;				// general purpose module variables
+reg				resetSoftware;
 reg	[ 7:0]	count;
 reg	[ 3:0]	randomSeed;
 wire	[ 7:0]	gameSpeed; 
 reg	[ 8:0]	yFloor;
 reg	[ 3:0]	loop;
-reg	key0hold;
-
+reg				key0hold;
 
 //
 // Instatiate  modules
